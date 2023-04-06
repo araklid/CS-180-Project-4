@@ -41,7 +41,7 @@ public class Menu {
             System.out.println("Enter your username!\nQuit: (q)");
             String userName = scan.nextLine();
             if (!userName.equals("q")) {
-                String[] dataS = findAccount("Sellers.txt", 0, userName);
+                String[] dataS = findAccount("Sellers.txt", userName);
                 if (dataS == null) {
                     System.out.println("Enter your password!\nQuit: (q)");
                     String password = scan.nextLine();
@@ -52,8 +52,7 @@ public class Menu {
                     System.out.println("Welcome " + userName + "!");
 
                     addNewUser("Sellers.txt", userName, password);
-                    dataS = findAccount("Sellers.txt", 0, userName);
-                    sellerAccount(scan, seller, dataS);
+                    dataS = findAccount("Sellers.txt", userName);
 
                 } else {
                     System.out.println("That account already exists! Would you like to try a different username?");
@@ -97,6 +96,7 @@ public class Menu {
     }
 
     public static void logIn(Scanner scan) {
+
         System.out.println("Login: Are you a seller (s) or a customer (c)?\nQuit: (q)");
         String slec = scan.nextLine();
 
@@ -116,48 +116,16 @@ public class Menu {
                         if (data[1].equals(password)) {
                             System.out.println("Welcome " + userName + "!");
                             Seller seller = new Seller(userName, password);
-                            sellerAccount(scan, seller, data);
+                            seller.sellerAccount(scan, data);
                         } else {
                             System.out.println("Your password is incorrect!");
-                            System.out.println("Would you like to try to log in again (log in) or create a new account (new)?");
-                            String redo = "";
-                            while (!redo.equals("log in") && !redo.equals("new") && !redo.equals("q")) {
-                                redo = scan.nextLine();
-                                if (redo.equals("log in")) {
-                                    logIn(scan);
-                                } else if (redo.equals("new")) {
-                                    create(scan);
-                                } else if (redo.equals("q")) {
-                                    goodbye();
-                                    return;
-                                } else {
-                                    System.out.println("Not a valid entry!");
-                                    System.out.println("Would you like to try to log in again (log in) or create a new account (new)?");
-                                    redo = scan.nextLine();
-                                }
-                            }
+                            redo(scan);
                         }
                     }
 
                 } else {
                     System.out.println("You are not in the system!");
-                    System.out.println("Would you like to try to log in again (log in) or create a new account (new)?\nQuit: (q)");
-                    String redo = "";
-                    while (!redo.equals("log in") && !redo.equals("new") && !redo.equals("q")) {
-                        redo = scan.nextLine();
-                        if (redo.equals("log in")) {
-                            logIn(scan);
-                        } else if (redo.equals("new")) {
-                            create(scan);
-                        } else if (redo.equals("q")) {
-                            goodbye();
-                            return;
-                        } else {
-                            System.out.println("Not a valid entry!");
-                            System.out.println("Would you like to try to log in again (log in) or create a new account (new)?\nQuit: (q)");
-                            redo = scan.nextLine();
-                        }
-                    }
+                    redo(scan);
                 }
             }
 
@@ -177,45 +145,13 @@ public class Menu {
                             System.out.println("Welcome " + userName + "!");
                         } else {
                             System.out.println("Your password is incorrect!");
-                            System.out.println("Would you like to try to log in again (log in) or create a new account (new)?");
-                            String redo = "";
-                            while (!redo.equals("log in") && !redo.equals("new") && !redo.equals("q")) {
-                                redo = scan.nextLine();
-                                if (redo.equals("log in")) {
-                                    logIn(scan);
-                                } else if (redo.equals("new")) {
-                                    create(scan);
-                                } else if (redo.equals("q")) {
-                                    goodbye();
-                                    return;
-                                } else {
-                                    System.out.println("Not a valid entry!");
-                                    System.out.println("Would you like to try to log in again (log in), create a new account (new), or quit (q)?");
-                                    redo = scan.nextLine();
-                                }
-                            }
+                            redo(scan);
                         }
                     }
 
                 } else {
                     System.out.println("You are not in the system!");
-                    System.out.println("Would you like to try to log in again (log in) or create a new account (new)?\nQuit: (q)");
-                    String redo = "";
-                    while (!redo.equals("log in") && !redo.equals("new") && !redo.equals("q")) {
-                        redo = scan.nextLine();
-                        if (redo.equals("log in")) {
-                            logIn(scan);
-                        } else if (redo.equals("new")) {
-                            create(scan);
-                        } else if (redo.equals("q")) {
-                            goodbye();
-                            return;
-                        } else {
-                            System.out.println("Not a valid entry!");
-                            System.out.println("Would you like to try to log in again (log in), create a new account (new), or quit (q)?");
-                            redo = scan.nextLine();
-                        }
-                    }
+                    redo(scan);
                 }
             }
         } else if (slec.equals("q")) {
@@ -227,7 +163,22 @@ public class Menu {
         }
     }
 
-    public static String[] findAccount(String fileName, int index, String input) {
+    public static String[] findAccount(String fileName, String input) {
+        String[] listy = readFile(fileName);
+        String[] userInfo = null;
+
+        for (int i = 0; i < listy.length; i++) {
+            if (listy[i] != null && listy[i].toLowerCase().contains(input)) {
+                userInfo = listy[i].split(";");
+                if (userInfo[0].equals(input)) {
+                    return userInfo;
+                }
+            }
+        }
+        return userInfo = null;
+    }
+
+    public static String[] readFile(String fileName) {
         ArrayList<String> listy = new ArrayList<String>();
 
         try (FileReader fr = new FileReader(fileName);
@@ -245,19 +196,30 @@ public class Menu {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return (listy.toArray(new String[listy.size()]));
+    }
 
-        String[] userInfo = null;
+    //mongoose;mongoosed;Potted Plant,M1shop,description,4,10,Growth Dirt,M1shop,description,9,30;Painting,M2shop,description,7,10
 
-        for (int i = 0; i < listy.size(); i++) {
-            if (listy.get(i) != null && listy.get(i).toLowerCase().contains(input)) {
-                userInfo = listy.get(i).split(",");
-                if (userInfo[0].equals(input)) {
-                    return userInfo;
+
+    public static void setInfo(String fileName, String userName, Seller seller) {
+        String[] data = findAccount(fileName,userName);
+        for (int i = 1; i < data.length; i++) {
+            String[] info = data[i].split(",");
+            for (int j = 0; i < info.length; j = j + 4) {
+                Product product = new Product(info[j], info[j + 1], info[j + 2], Double.parseDouble(info[j + 3]), Integer.parseInt(info[j + 4]), seller);
+                for (int k = 0; k < seller.getStores().size(); i++) {
+                    if (seller.getStores().get(i).equals(info[j + 1])) {
+                        seller.getStores().get(i).addProduct(product);
+                    } else {
+                        Store store = new Store(info[j + 1]);
+                    }
                 }
             }
         }
-        return userInfo = null;
     }
+
+
 
     public static void addNewUser(String fileName, String userName, String password) {
         try {
@@ -277,132 +239,20 @@ public class Menu {
         System.out.println("Goodbye!");
     }
 
-    public static void sellerAccount(Scanner scan, Seller seller, String[] data) {
-        System.out.println("Would you like to view statistics dashboard (1), import products (2), or export products (3)?");
-        String sOptions = scan.nextLine();
-        if (sOptions.equals("1")){
-            //TODO: include amount of products in customer cart
-            //TODO: allow for sorting by: name, amount in cart, amount in store, etc
-
-        } else if (sOptions.equals("2")) {
-            //TODO: Import a CSV file. I don't want to do this.
-
-        } else if (sOptions.equals("3")) {
-            //TODO: print the stores, ask which store to look at
-            //TODO: once store is selected, print the products
-
-            if (data.length > 2) {
-                String stores[] = new String[data.length - 2];
-                for (int i = 0; i < stores.length; i++) {
-                    stores[i] = data[i + 2];
-                }// creating a new string[] with just store names
-
-                for (int i = 0; i < stores.length; i++) {
-                    System.out.printf((i + 1) + ". " + stores[i] + "\n");
-                } //printing the stores
-                System.out.println("Enter the name of the store you would like to export, or select all by entering (all).");
-                String storeSlec = scan.nextLine();
-
-                if (!storeSlec.equals("all")) {
-                    try (FileReader fr = new FileReader("Stores.txt");
-                         BufferedReader bfr = new BufferedReader(fr)) {
-                        String line = bfr.readLine(); //reading data about the products the stores have
-                        while (line != null) {
-                            if (line != null) {
-                                String[] storeInfo = line.split(","); //reading from the stores
-                                //TODO: AS OF RIGHT NOW IT IS CREATING A TXT FILE. FIX THIS
-                                if (storeInfo[0].equals(storeSlec)) {
-                                    try {
-                                        FileOutputStream fos = new FileOutputStream(storeSlec + ".txt", false);
-                                        PrintWriter pw = new PrintWriter(fos);
-                                        pw.print(storeInfo[0] + ":\n");
-                                        for (int i = 1; i < storeInfo.length; i++) {
-                                            if (i%2 != 0) { //checking if the entry is odd or not, since it switches between item and quantity
-                                                pw.print("   " + storeInfo[i] + "\n");//printing name
-                                            } else {
-                                                pw.print("      " + storeInfo[i] + "\n");//printing quantity
-                                            }
-                                        }
-                                        pw.close();
-                                        //TODO: Do the CSV thing, I don't want to
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }
-                            line = bfr.readLine();
-                        }
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else if (storeSlec.equals("all")) {
-                    //implement stores[]
-                    try (FileReader fr = new FileReader("Stores.txt");
-                         BufferedReader bfr = new BufferedReader(fr)) {
-                        String line = bfr.readLine(); //reading data about the products the stores have
-                        int j = 0;
-                        while (line != null && j < stores.length) {
-                            if (line != null) {
-                                String[] storeInfo = line.split(","); //reading from the stores
-                                //TODO: AS OF RIGHT NOW IT IS CREATING A TXT FILE. FIX THIS
-                                if (storeInfo[0].equals(stores[j])) {
-                                    try {
-                                        FileOutputStream fos = new FileOutputStream("all.txt", true);
-                                        PrintWriter pw = new PrintWriter(fos);
-                                        pw.print(storeInfo[0] + ": \n");
-                                        for (int i = 1; i < storeInfo.length; i++) {
-                                            if (i % 2 != 0) { //checking if the entry is odd or not, since it switches between item and quantity
-                                                pw.print("   " + storeInfo[i] + "\n");//printing name
-                                            } else {
-                                                pw.print("      " + storeInfo[i] + "\n");//printing quantity
-                                            }
-                                        }
-                                        pw.close();
-                                        //TODO: Do the CSV thing, I don't want to
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            }
-                            j++;
-                            line = bfr.readLine();
-                        }
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    System.out.println("Please enter a valid entry.");
-                }
-
-                ////
-                ArrayList<String> productData = new ArrayList<>();
-
-                try (FileReader fr = new FileReader("Stores.txt");
-                     BufferedReader bfr = new BufferedReader(fr)) {
-                    String line = bfr.readLine();
-                    while (line != null) {
-                        line = bfr.readLine();
-                        if (line != null) {
-                            String[] storeInfo = line.split(",");
-                        }
-                    }
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-            } else {
-                System.out.println("You don't have any products to export yet! Please select another option.");
-                sellerAccount(scan, seller, data);
-            }
-
+    public static void redo(Scanner scan) {
+        System.out.println("Would you like to try to log in again (log in) or create a new account (new)?\nQuit: (q)");
+        String redo = scan.nextLine();
+        if (redo.equals("log in")) {
+            logIn(scan);
+        } else if (redo.equals("new")) {
+            create(scan);
+        } else if (redo.equals("q")) {
+            goodbye();
+            return;
+        } else {
+            System.out.println("Not a valid entry!");
+            redo(scan);
         }
-
     }
 
 }
