@@ -1,6 +1,6 @@
-mongoose;mongoosed;M1shop;Potted Plant;4;M2shop;Painting;7
-goose;goosed;G1shop;Bird Seed;100;G2shop;Hammock;10
-frog;frogged;F1shop;Rocks;20;F2shop;Bug;30
-leopard;leoparded;L1shop;Bed Sheets;5;L2shop;Cup;40
-ostrich;ostriched;O1shop;Forks;10;02shop;Spoons;10
-alligator;alligatored;A1shop;Toothbrush;20;A2shop;Toothpaste;30
+mongoose;mongoosed;M1shop;M2shop
+goose;goosed;G1shop;G2shop
+frog;frogged;F1shop;F2shop
+leopard;leoparded;L1shop;L2shop
+ostrich;ostriched;O1shop;02shop
+alligator;alligatored;A1shop;A2shop
