@@ -1,0 +1,12 @@
+M1shop;Potted Plant;4
+M2shop;Painting;7
+G1shop;Bird Seed;100
+G2shop;Hammock;10
+F1shop;Rocks;20
+F2shop;Bug;30
+L1shop;Bed Sheets;5
+L2shop;Cup;40
+O1shop;Forks;10
+02shop;Spoons;10
+A1shop;Toothbrush;20
+A2shop;Toothpaste;30
