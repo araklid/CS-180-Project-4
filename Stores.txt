@@ -7,6 +7,6 @@ F2shop,Bug,30
 L1shop,Bed Sheets,5,Pillowcases,10
 L2shop,Cup,40
 O1shop,Forks,10,Knives,10
-02shop,Spoons,10
+O2shop,Spoons,10
 A1shop,Toothbrush,20,Toothpaste,30
-A2shop,
+A2shop
