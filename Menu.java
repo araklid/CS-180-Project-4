@@ -8,7 +8,7 @@ import java.util.Scanner;
 
 /** Dilara Baysal
  * 4/6/2023
- * Main menu for this project. Individual classes need to be added, as of right now basic implementation has been added.
+ *
  */
 
 public class Menu {
@@ -92,6 +92,7 @@ public class Menu {
 
             if (!userName.equals("q")) {
                 String[] data = findAccount("Sellers.txt", 0, userName);
+
                 if (data != null) {
 
                     System.out.println("Enter your password!\nQuit: (q)");
@@ -101,9 +102,24 @@ public class Menu {
                         if (data[1].equals(password)) {
                             System.out.println("Welcome " + userName + "!");
                         } else {
-                            System.out.println("You are not in the system!");
-                            System.out.println("Would you like to try again (try) or create a new account (new)?");
-                        }
+                            System.out.println("Your password is incorrect!");
+                            System.out.println("Would you like to try to log in again (log in) or create a new account (new)?");
+                            String redo = "";
+                            while (!redo.equals("log in") && !redo.equals("new") && !redo.equals("q")) {
+                                redo = scan.nextLine();
+                                if (redo.equals("log in")) {
+                                    logIn(scan);
+                                } else if (redo.equals("new")) {
+                                    create(scan);
+                                } else if (redo.equals("q")) {
+                                    goodbye();
+                                    return;
+                                } else {
+                                    System.out.println("Not a valid entry!");
+                                    System.out.println("Would you like to try to log in again (log in) or create a new account (new)?");
+                                    redo = scan.nextLine();
+                                }
+                            }                        }
                     }
 
                 } else {
@@ -221,13 +237,20 @@ public class Menu {
         for (int i = 0; i < listy.size(); i++) {
             if (listy.get(i) != null && listy.get(i).toLowerCase().contains(input)) {
                 userInfo = listy.get(i).split(";");
+                if (userInfo[0].equals(input)) {
+                    return userInfo;
+                }
             }
         }
-        return userInfo;
+        return userInfo = null;
     }
 
     public static void goodbye() {
         System.out.println("Goodbye!");
+    }
+
+    public static void sellerAccount() {
+        //
     }
 
 }
