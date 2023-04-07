@@ -41,18 +41,14 @@ public class Menu {
             System.out.println("Enter your username!\nQuit: (q)");
             String userName = scan.nextLine();
             if (!userName.equals("q")) {
-                String[] dataS = findAccount("Sellers.txt", userName);
-                if (dataS == null) {
+                String[] data = findAccount("Sellers.txt", userName);
+                if (data == null) {
                     System.out.println("Enter your password!\nQuit: (q)");
                     String password = scan.nextLine();
 
                     Seller seller = new Seller(userName, password);
-                    //TODO: not sure if I implemented this right
-
-                    System.out.println("Welcome " + userName + "!");
-
-                    addNewUser("Sellers.txt", userName, password);
-                    dataS = findAccount("Sellers.txt", userName);
+                    System.out.println("Welcome " + seller.getUsername() + "!");
+                    writeNewUser("Sellers.txt", userName, password);
 
                 } else {
                     System.out.println("That account already exists! Would you like to try a different username?");
@@ -63,10 +59,9 @@ public class Menu {
         } else if (slec.equals("c")) {
             System.out.println("Enter your username!\nQuit: (q)");
             String userName = scan.nextLine();
-            String[] data = findAccount("CustomersAndCart.txt", 0,userName);
             if (!userName.equals("q")) {
-                String[] dataC = findAccount("CustomersAndCart.txt", 0, userName);
-                if (dataC != null) {
+                String[] data = findAccount("CustomersAndCart.txt", userName);
+                if (data != null) {
                     System.out.println("Enter your password!\nQuit: (q)");
                     String password = scan.nextLine();
 
@@ -105,7 +100,7 @@ public class Menu {
             String userName = scan.nextLine();
 
             if (!userName.equals("q")) {
-                String[] data = findAccount("Sellers.txt", 0, userName);
+                String[] data = findAccount("Sellers.txt", userName);
 
                 if (data != null) {
 
@@ -116,7 +111,8 @@ public class Menu {
                         if (data[1].equals(password)) {
                             System.out.println("Welcome " + userName + "!");
                             Seller seller = new Seller(userName, password);
-                            seller.sellerAccount(scan, data);
+                            setInfo("Sellers.txt", userName, seller);
+
                         } else {
                             System.out.println("Your password is incorrect!");
                             redo(scan);
@@ -134,7 +130,7 @@ public class Menu {
             String userName = scan.nextLine();
 
             if (!userName.equals("q")) {
-                String[] data = findAccount("CustomersAndCart.txt", 0, userName);
+                String[] data = findAccount("CustomersAndCart.txt", userName);
                 if (data != null) {
 
                     System.out.println("Enter your password!\nQuit: (q)");
@@ -143,6 +139,8 @@ public class Menu {
                     if (!password.equals("q")) {
                         if (data[1].equals(password)) {
                             System.out.println("Welcome " + userName + "!");
+                            Customer customer = new Customer(userName, password);
+
                         } else {
                             System.out.println("Your password is incorrect!");
                             redo(scan);
@@ -178,10 +176,10 @@ public class Menu {
         return userInfo = null;
     }
 
-    public static String[] readFile(String fileName) {
+    public static String[] readFile(String filePath) {
         ArrayList<String> listy = new ArrayList<String>();
 
-        try (FileReader fr = new FileReader(fileName);
+        try (FileReader fr = new FileReader(filePath);
              BufferedReader bfr = new BufferedReader(fr)) {
             String line = bfr.readLine();
             listy.add(line);
@@ -199,20 +197,22 @@ public class Menu {
         return (listy.toArray(new String[listy.size()]));
     }
 
-    //mongoose;mongoosed;Potted Plant,M1shop,description,4,10,Growth Dirt,M1shop,description,9,30;Painting,M2shop,description,7,10
+    //mongoose;mongoosed;Potted Plant,M1shop,description,4,10 dollars,Growth Dirt,M1shop,description,9,30 dollars;Painting,M2shop,description,7,10 dollars
 
 
     public static void setInfo(String fileName, String userName, Seller seller) {
-        String[] data = findAccount(fileName,userName);
+        String[] data = findAccount(fileName, userName);
         for (int i = 1; i < data.length; i++) {
             String[] info = data[i].split(",");
             for (int j = 0; i < info.length; j = j + 4) {
                 Product product = new Product(info[j], info[j + 1], info[j + 2], Double.parseDouble(info[j + 3]), Integer.parseInt(info[j + 4]), seller);
                 for (int k = 0; k < seller.getStores().size(); i++) {
-                    if (seller.getStores().get(i).equals(info[j + 1])) {
+                    if (seller.getStores().get(i).getName().equals(info[j + 1])) {
                         seller.getStores().get(i).addProduct(product);
                     } else {
                         Store store = new Store(info[j + 1]);
+                        store.addProduct(product);
+                        seller.addStores(store);
                     }
                 }
             }
@@ -220,8 +220,7 @@ public class Menu {
     }
 
 
-
-    public static void addNewUser(String fileName, String userName, String password) {
+    public static void writeNewUser(String fileName, String userName, String password) {
         try {
             FileOutputStream fos = new FileOutputStream(fileName, true);
             PrintWriter pw = new PrintWriter(fos);
@@ -232,7 +231,6 @@ public class Menu {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
     }
 
     public static void goodbye() {
@@ -255,4 +253,106 @@ public class Menu {
         }
     }
 
+    public static void customerActions() {
+        //dashboard
+
+
+        //cart
+        //purchase history
+    }
+
+    public static void sellerAccount(Scanner scan, Seller seller, String[] data) {
+        System.out.println("Would you like to view statistics dashboard (1), import products (2), export products (3), edit products (4)?");
+        String sOptions = scan.nextLine();
+        if (sOptions.equals("1")) {
+            //TODO: include amount of products in customer cart
+            //TODO: allow for sorting by: name, amount in cart, amount in store, etc
+
+        } else if (sOptions.equals("2")) {
+            System.out.println("Enter the filepath (products should be on separate lines):");
+            String path = scan.nextLine();
+            String[] sell = readFile(path);
+            System.out.println("Enter the store associated with these products:");
+            String temp = scan.nextLine();
+
+            for (int j = 0; j < sell.length; j++) {
+                String[] prodData = sell[j].split(",");
+                Product product = new Product(prodData[0], prodData[1], prodData[2], Double.parseDouble(prodData[3]), Integer.parseInt(prodData[4]), seller);
+                for (int i = 0; i < seller.getStores().size(); i++) {
+                    if (seller.getStores().get(i).getName().equals(temp)) {
+                        seller.getStores().get(i).addProduct(product);
+                    }
+                }
+            }
+            
+            
+
+        } else if (sOptions.equals("3")) {
+            //TODO: print the stores, ask which store to look at
+            //TODO: once store is selected, print the products
+
+            if (seller.getStores().size() > 0) {
+
+                System.out.println("Enter the name of the store you would like to export: ");
+                String storeSlec = scan.nextLine();
+                //TODO: add a correction for if this is not a valid store
+
+                for (int i = 0; i < seller.getStores().size(); i++) {
+                    if (seller.getStores().get(i).getName().equals(storeSlec)) {
+                        try {
+                            File csvFile = new File(storeSlec + ".csv");
+                            FileWriter fw = new FileWriter(csvFile);
+                            for (int j = 0; j < seller.getStores().get(i).getProducts().size(); j++) {
+                                fw.write(seller.getStores().get(i).getProducts().get(j).getName() + ", "
+                                        + seller.getStores().get(i).getProducts().get(j).getNameOfStore() + ", "
+                                        + seller.getStores().get(i).getProducts().get(j).getDescription() + ", "
+                                        + seller.getStores().get(i).getProducts().get(j).getQuantityAvailable() + ", "
+                                        + seller.getStores().get(i).getProducts().get(j).getPrice());
+                            }
+                            fw.close();
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    }
+                }
+            } else {
+                System.out.println("Store is empty.");
+            }
+        } else if (sOptions.equals("4")) {
+            //print dashboard
+            System.out.println("Which store is this product located in?");
+            String storeSlec = scan.nextLine();
+            for (int i = 0; i < seller.getStores().size(); i++) {
+                if (seller.getStores().get(i).getName().equals(storeSlec)) {
+                    System.out.println("What is the product's name?");
+                    String prodSlec = scan.nextLine();
+                    for (int j = 0; j < seller.getStores().get(i).getProducts().size(); j++) {
+                        if (seller.getStores().get(i).getProducts().get(j).equals(prodSlec)) {
+                            System.out.println("Enter the new name: ");
+                            String newName = scan.nextLine();
+                            System.out.println("Enter the new description: ");
+                            String newDesc = scan.nextLine();
+                            System.out.println("Enter the quantity available for purchase:");
+                            int newQuant = scan.nextInt();
+                            scan.nextLine();
+                            System.out.println("Enter the price:");
+                            double newPrice = scan.nextDouble();
+                            scan.nextLine();
+                            seller.getStores().get(i).modifyProduct(seller.getStores().get(i).getProducts().get(j),
+                                    newName,
+                                    storeSlec,
+                                    newDesc,
+                                    newPrice,
+                                    newQuant,
+                                    seller);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public static void dashboard() {
+
+    }
 }
