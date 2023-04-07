@@ -1,6 +1,0 @@
-mongoose,mongoosed,M1shop,M2shop
-goose,goosed,G1shop,G2shop
-frog,frogged,F1shop,F2shop
-leopard,leoparded,L1shop,L2shop
-ostrich,ostriched,O1shop,02shop
-alligator,alligatored,A1shop,A2shop
