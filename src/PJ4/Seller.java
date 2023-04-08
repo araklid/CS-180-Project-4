@@ -17,4 +17,10 @@ public class Seller extends User {
         stores = new ArrayList<>();
     }
 
+    public ArrayList<Store> getStores() {
+        return stores;
+    }
+    public void addStores(Store store) {
+        stores.add(store);
+    }
 }

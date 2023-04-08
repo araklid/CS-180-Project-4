@@ -1,7 +1,7 @@
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Scanner;
-
+import src.PJ4.*;
 /** Dilara Baysal
  * 4/6/2023
  *
@@ -205,7 +205,7 @@ public class Menu {
         for (int i = 1; i < data.length; i++) {
             String[] info = data[i].split(",");
             for (int j = 0; i < info.length; j = j + 4) {
-                Product product = new Product(info[j], info[j + 1], info[j + 2], Double.parseDouble(info[j + 3]), Integer.parseInt(info[j + 4]), seller);
+                Product product = new Product(info[j], info[j + 1], info[j + 2], Double.parseDouble(info[j + 3]), Integer.parseInt(info[j + 4]));
                 for (int k = 0; k < seller.getStores().size(); i++) {
                     if (seller.getStores().get(i).getName().equals(info[j + 1])) {
                         seller.getStores().get(i).addProduct(product);
@@ -277,7 +277,7 @@ public class Menu {
 
             for (int j = 0; j < sell.length; j++) {
                 String[] prodData = sell[j].split(",");
-                Product product = new Product(prodData[0], prodData[1], prodData[2], Double.parseDouble(prodData[3]), Integer.parseInt(prodData[4]), seller);
+                Product product = new Product(prodData[0], prodData[1], prodData[2], Double.parseDouble(prodData[3]), Integer.parseInt(prodData[4]));
                 for (int i = 0; i < seller.getStores().size(); i++) {
                     if (seller.getStores().get(i).getName().equals(temp)) {
                         seller.getStores().get(i).addProduct(product);
@@ -338,13 +338,12 @@ public class Menu {
                             System.out.println("Enter the price:");
                             double newPrice = scan.nextDouble();
                             scan.nextLine();
-                            seller.getStores().get(i).modifyProduct(seller.getStores().get(i).getProducts().get(j),
+                            seller.getStores().get(i).modifyProduct(seller.getStores().get(i).getProducts().get(j).getName(),
                                     newName,
                                     storeSlec,
                                     newDesc,
                                     newPrice,
-                                    newQuant,
-                                    seller);
+                                    newQuant);
                         }
                     }
                 }

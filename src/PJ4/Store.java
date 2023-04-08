@@ -19,6 +19,24 @@ public class Store {
         this.name = name;
         products = new ArrayList<>();
     }
-    
+    public void addProduct(Product product) {
+        products.add(product);
+    }
+    public ArrayList<Product> getProducts() {
+        return products;
+    }
 
+    public String getName() {
+        return name;
+    }
+    public void modifyProduct(String name, String newName, String nameOfStore, String description, double price,
+                              int quantityAvailable) {
+        int index = -1;
+        for (int i = 0; i < products.size(); i++) {
+            if (name.equals(products.get(i).getName())) {
+                index = i;
+            }
+        }
+        products.set(index, new Product(newName, nameOfStore, description, price, quantityAvailable));
+    }
 }
