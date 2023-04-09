@@ -30,7 +30,7 @@ public class Menu {
             } else if (acc.equals("log in")) {
                 logIn(scan, sellers, customers);
             } else if (acc.equals("q")) {
-                goodbye();
+                System.out.println("Goodbye!");
                 return;
             } else {
                 System.out.println("Not a valid entry!");
@@ -92,7 +92,7 @@ public class Menu {
                 String[] purchaseHistory = dataLine[3].split(",");
 
                 for (int j = 0; j < purchaseHistory.length; j = j + 5) {
-                    customer.addToShoppingCart(new Product(purchaseHistory[j],
+                    customer.addToPurchaseHistory(new Product(purchaseHistory[j],
                             purchaseHistory[j + 1], purchaseHistory[j + 2],
                             Integer.parseInt(purchaseHistory[j + 3]),
                             Double.parseDouble(purchaseHistory[j + 4])));
@@ -125,10 +125,11 @@ public class Menu {
                 String password = scan.nextLine();
 
                 Seller seller = new Seller(userName, password);
+                sellers.add(seller);
                 System.out.println("Welcome " + seller.getUsername() + "!");
                 sellerAccount(scan, seller);
             } else {
-                goodbye();
+                System.out.println("Goodbye!");
             }
         } else if (slec.equals("c")) {
             System.out.println("Enter your username!\nQuit: (q)");
@@ -143,23 +144,23 @@ public class Menu {
 
                 System.out.println("Enter your password!\nQuit: (q)");
                 String password = scan.nextLine();
-
                 Customer customer = new Customer(userName, password);
+                customers.add(customer);
                 System.out.println("Welcome " + customer.getUsername() + "!");
                 customerAccount(scan, sellers, customer, customers);
             } else {
-                goodbye();
+                System.out.println("Goodbye!");
             }
 
         } else if (slec.equals("q")) {
-            goodbye();
+            System.out.println("Goodbye!");
         } else {
             System.out.println("Not a valid entry!");
             create(scan, sellers, customers);
         }
     }
 
-    public static Product displayFunctions(Scanner scan, ArrayList<Seller> sellers) {
+    public static Product displayFunctions(Scanner scan, ArrayList<Seller> sellers, ArrayList<Customer> customers) {
 
         ArrayList<Product> list = display(sellers);
 
@@ -167,7 +168,7 @@ public class Menu {
         String entry = scan.nextLine();
 
         if (entry.equals("search")) {
-            search(scan, sellers);
+            search(scan, sellers, customers);
         } else if (entry.equals("quantity")) {
             displayByQuantity(sellers, list); // currently doesn't work
         } else if (entry.equals("price")) {
@@ -178,13 +179,15 @@ public class Menu {
         String prodNamMaybe = scan.nextLine();
 
         if (prodNamMaybe.equals("again")) {
-            displayFunctions(scan,sellers);
+            displayFunctions(scan,sellers, customers);
         } else {
             boolean temp = false;
             for (int i = 0; i < sellers.size(); i++) {
                 for (int j = 0; j < sellers.get(i).getStores().size(); j++) {
-                    for (int k = 0; k < sellers.get(j).getStores().get(j).getProducts().size(); k++) {
-                        if (sellers.get(i).getStores().get(j).getProducts().get(k).getName().equals(entry)) {
+                    for (int k = 0; k < sellers.get(i).getStores().get(j).getProducts().size(); k++) {
+                        if (sellers.get(i).getStores().get(j).getProducts().get(k).getName().toLowerCase().equals(prodNamMaybe.toLowerCase())) {
+                            temp = true;
+                            System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getName());
                             return sellers.get(i).getStores().get(j).getProducts().get(k);
                         }
                     }
@@ -194,7 +197,10 @@ public class Menu {
                 System.out.println("No product matches this entry, would you like to select another (y/n)?");
                 String yesOrNo = scan.nextLine();
                 if (yesOrNo.equals("y")) {
-                    displayFunctions(scan, sellers);
+                    displayFunctions(scan, sellers, customers);
+                } else {
+                    System.out.println("Goodbye!");
+                    writeSellers(sellers);
                 }
             }
         }
@@ -206,47 +212,28 @@ public class Menu {
 
         for (int i = 0; i < sellers.size(); i++) {
             for (int j = 0; j < sellers.get(i).getStores().size(); j++) {
-                System.out.println("*****************************************");
+                System.out.println("****************************************");
                 System.out.println(sellers.get(i).getStores().get(j).getName());
-                System.out.println("*****************************************");
+                System.out.println("****************************************");
                 for (int k = 0; k < sellers.get(i).getStores().get(j).getProducts().size(); k++) {
                     System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getName());
                     System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getDescription());
-                    System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getQuantityAvailable() + " units");
-                    System.out.println("$" + sellers.get(i).getStores().get(j).getProducts().get(k).getPrice());
+                    System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getQuantityAvailable());
+                    System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getPrice());
                     list.add(sellers.get(i).getStores().get(j).getProducts().get(k));
-                    System.out.println("-------------------------------------------");
+                    System.out.println("----------------------------------------");
 
                 }
             }
         }
-        ArrayList<Product> sortedProducts = new ArrayList<>();
-        int index = -1;
-        int lastIndex = -1;
-        int size = list.size();
-        while (sortedProducts.size() < size) {
-            double price = -1;
-            for (int i = 0; i < list.size(); i++) {
-                if (list.get(i).getPrice() >= price) {
-                    price = list.get(i).getPrice();
-                    index = i;
-                }
-            }
-            sortedProducts.add(list.get(index));
-            list.remove(index);
-        }
-        return sortedProducts;
+
+        return list;
     }
     
 
     public static void displayByCost(ArrayList<Seller> sellers, ArrayList<Product> list) {
-        for (int i = 0; i < list.size(); i++) {
-            System.out.println(list.get(i).getName());
-            System.out.println(list.get(i).getDescription());
-            System.out.println(list.get(i).getQuantityAvailable() + " units");
-            System.out.println("$" + list.get(i).getPrice());
-        }
-        /**for (int i = 0; i < sellers.size(); i++) {
+
+        for (int i = 0; i < sellers.size(); i++) {
             for (int j = 0; j < sellers.get(i).getStores().size(); j++) {
                 System.out.println(sellers.get(i).getStores().get(j).getName());
                 for (int k = 0; k < sellers.get(i).getStores().get(i).getProducts().size(); k++) {
@@ -258,8 +245,7 @@ public class Menu {
             }
         }
     }
-    **/
-    }
+
     public static void displayByQuantity(ArrayList<Seller> sellers, ArrayList<Product> list) {
         for (int i = 0; i < sellers.size(); i++) {
             for (int j = 0; j < sellers.get(i).getStores().size(); j++) {
@@ -274,11 +260,12 @@ public class Menu {
         }
     }
 
-    public static void search(Scanner scan, ArrayList<Seller> sellers) {
+    public static void search(Scanner scan, ArrayList<Seller> sellers, ArrayList<Customer> customers) {
         System.out.println("Search by name, store, or description of products: ");
         String product = scan.nextLine();
 
         boolean temp = false;
+        System.out.println("------------------------------------");
 
         for (int i = 0; i < sellers.size(); i++) {
             for (int j = 0; j < sellers.get(i).getStores().size(); j++) {
@@ -291,7 +278,8 @@ public class Menu {
                         System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getDescription());
                         System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getQuantityAvailable());
                         System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getPrice());
-                        return;
+                        temp = true;
+                        System.out.println("------------------------------------");
                     }
                 }
             }
@@ -301,9 +289,10 @@ public class Menu {
             System.out.println("No product matches this entry, would you like to select another (y/n)?");
             String yesOrNo = scan.nextLine();
             if (yesOrNo.equals("y")) {
-                displayFunctions(scan, sellers);
+                displayFunctions(scan, sellers, customers);
             } else {
-
+                System.out.println("Goodbye!");
+                writeCustomers(customers);
             }
         }
     }
@@ -375,7 +364,7 @@ public class Menu {
                 }
             }
         } else if (slec.equals("q")) {
-            goodbye();
+            System.out.println("Goodbye!");
         } else {
             System.out.println("Not a valid entry!");
             logIn(scan, sellers, customers);
@@ -418,10 +407,6 @@ public class Menu {
         }
     }
 
-    public static void goodbye() {
-        System.out.println("Goodbye!");
-    }
-
     public static void redo(Scanner scan, ArrayList<Seller> sellers, ArrayList<Customer> customers) {
         System.out.println("Would you like to log in again (log in) or create a new account (new)?\nQuit: (q)");
         String redo = scan.nextLine();
@@ -430,7 +415,7 @@ public class Menu {
         } else if (redo.equals("new")) {
             create(scan, sellers, customers);
         } else if (redo.equals("q")) {
-            goodbye();
+            System.out.println("Goodbye!");
         } else {
             System.out.println("Not a valid entry!");
             redo(scan, sellers, customers);
@@ -443,7 +428,7 @@ public class Menu {
         String selection = scan.nextLine();
 
         if (selection.equals("view")) {
-            Product productSelection = displayFunctions(scan, sellers);
+            Product productSelection = displayFunctions(scan, sellers, customers);
             System.out.println("Would you like to purchase " + productSelection.getName() + ", or add to cart?");
             System.out.println("1. Purchase\n2. Add");
             String temp = scan.nextLine();
@@ -452,15 +437,18 @@ public class Menu {
                 System.out.println("Nice choice, you've just purchased " + productSelection.getName());
                 productSelection.setQuantityAvailable(productSelection.getQuantityAvailable() - 1);
                 customer.addToPurchaseHistory(productSelection);
+                customerAccount(scan, sellers, customer, customers);
+
             } else if (temp.equals("2")) {
                 System.out.println("Added " + productSelection.getName() + " to cart");
                 customer.addToShoppingCart(productSelection);
+                customerAccount(scan, sellers, customer, customers);
             }
 
         } else if (selection.equals("q")) {
-            goodbye();
+            System.out.println("Goodbye!");
+            writeCustomers(customers);
         } else if (selection.equals("hist")) {
-            System.out.println(customer.getPurchaseHistory());
             if (customer.getPurchaseHistory().size() != 0 || customer.getPurchaseHistory() == null) {
                 for (int i = 0; i < customer.getPurchaseHistory().size(); i++) {
                     System.out.println(customer.getPurchaseHistory().get(i).getName() + ", "
@@ -468,12 +456,12 @@ public class Menu {
                             + customer.getPurchaseHistory().get(i).getDescription() + ", "
                             + customer.getPurchaseHistory().get(i).getPrice());
                 }
+                customerAccount(scan, sellers, customer, customers);
             } else {
                 System.out.println("Your purchase history is empty!");
                 customerAccount(scan, sellers, customer, customers);
             }
         } else if (selection.equals("cart")) {
-            System.out.println(customer.getShoppingCart());
 
             if (customer.getShoppingCart().size() != 0 || customer.getShoppingCart() == null) {
                 for (int i = 0; i < customer.getShoppingCart().size(); i++) {
@@ -509,7 +497,11 @@ public class Menu {
                     customerAccount(scan, sellers, customer, customers);
                 } else if (next.equals("return")) {
                     customerAccount(scan, sellers, customer, customers);
+                } else if (next.equals("q")) {
+                    System.out.println("Goodbye!");
+                    writeCustomers(customers);
                 }
+                customerAccount(scan, sellers, customer, customers);
             } else {
                 System.out.println("Your shopping cart is empty!");
                 customerAccount(scan, sellers, customer, customers);
@@ -524,6 +516,7 @@ public class Menu {
             //TODO: include amount of products in customer cart
             //TODO: allow for sorting by: name, amount in cart, amount in store, etc
 
+            sellerAccount(scan, seller);
         } else if (sOptions.equals("2")) {
             System.out.println("Enter the filepath (products should be on separate lines):");
             String path = scan.nextLine();
@@ -540,9 +533,7 @@ public class Menu {
                     }
                 }
             }
-
-
-
+            sellerAccount(scan, seller);
         } else if (sOptions.equals("3")) {
 
             if (seller.getStores().size() > 0) {
@@ -572,6 +563,7 @@ public class Menu {
             } else {
                 System.out.println("Store is empty.");
             }
+            sellerAccount(scan, seller);
         } else if (sOptions.equals("4")) {
             //print dashboard
             System.out.println("Which store is this product located in?");
@@ -604,6 +596,68 @@ public class Menu {
                     }
                 }
             }
+            sellerAccount(scan, seller);
         }
     }
+
+    public static void writeCustomers(ArrayList<Customer> customers) {
+        try {
+            FileOutputStream fos = new FileOutputStream("Customers.txt", false);
+            PrintWriter pw = new PrintWriter(fos);
+
+            for (int i = 0; i < customers.size(); i++) {
+                pw.write(customers.get(i).getUsername());
+                pw.write(";");
+                pw.write(customers.get(i).getPassword());
+                pw.write(";");
+                if (customers.get(i).getShoppingCart() != null) {
+                    for (int j = 0; j < customers.get(i).getShoppingCart().size(); j++) {
+                        pw.write(customers.get(i).getShoppingCart().get(j).getNameOfStore() + ","
+                                + customers.get(i).getShoppingCart().get(j).getName() + ","
+                                + customers.get(i).getShoppingCart().get(j).getDescription() + ","
+                                + customers.get(i).getShoppingCart().get(j).getQuantityAvailable() + ","
+                                + customers.get(i).getShoppingCart().get(j).getPrice());
+
+                        System.out.println(customers.get(i).getShoppingCart().get(j).getNameOfStore() + ","
+                                + customers.get(i).getShoppingCart().get(j).getName() + ","
+                                + customers.get(i).getShoppingCart().get(j).getDescription() + ","
+                                + customers.get(i).getShoppingCart().get(j).getQuantityAvailable() + ","
+                                + customers.get(i).getShoppingCart().get(j).getPrice());
+                        if (j < customers.get(i).getShoppingCart().size() - 1) {
+                            pw.write(",");
+                        }
+                    }
+                    pw.write(";");
+                }
+                if (customers.get(i).getPurchaseHistory() != null) {
+                    for (int j = 0; j < customers.get(i).getPurchaseHistory().size(); j++) {
+                        pw.write(customers.get(i).getPurchaseHistory().get(j).getNameOfStore() + ","
+                                + customers.get(i).getPurchaseHistory().get(j).getName() + ","
+                                + customers.get(i).getPurchaseHistory().get(j).getDescription() + ","
+                                + customers.get(i).getPurchaseHistory().get(j).getQuantityAvailable() + ","
+                                + customers.get(i).getPurchaseHistory().get(j).getPrice());
+                        System.out.println("PH" + customers.get(i).getPurchaseHistory().get(j).getNameOfStore() + ","
+                                + customers.get(i).getPurchaseHistory().get(j).getName() + ","
+                                + customers.get(i).getPurchaseHistory().get(j).getDescription() + ","
+                                + customers.get(i).getPurchaseHistory().get(j).getQuantityAvailable() + ","
+                                + customers.get(i).getPurchaseHistory().get(j).getPrice());
+                        if (j < customers.get(i).getPurchaseHistory().size() - 1) {
+                            pw.write(",");
+                        }
+                    }
+                }
+                pw.write("\n");
+            }
+
+            pw.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static void writeSellers(ArrayList<Seller> sellers) {
+
+    }
+
 }
