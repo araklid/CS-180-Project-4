@@ -231,7 +231,6 @@ public class Menu {
 
 
     public static void displayByCost(ArrayList<Seller> sellers, ArrayList<Product> list) {
-        System.out.println("AAAAAAAAAA");
         ArrayList<Product> sortedProducts = new ArrayList<>();
         int index = -1;
         int size = list.size();
@@ -254,21 +253,34 @@ public class Menu {
             System.out.println(sortedProducts.get(i).getName());
             System.out.println(sortedProducts.get(i).getDescription());
             System.out.println(sortedProducts.get(i).getQuantityAvailable() + " units");
-            System.out.printf("$%.2f", sortedProducts.get(i).getPrice());
+            System.out.printf("$%.2f\n", sortedProducts.get(i).getPrice());
         }
     }
 
     public static void displayByQuantity(ArrayList<Seller> sellers, ArrayList<Product> list) {
-        for (int i = 0; i < sellers.size(); i++) {
-            for (int j = 0; j < sellers.get(i).getStores().size(); j++) {
-                System.out.println(sellers.get(i).getStores().get(j).getName());
-                for (int k = 0; k < sellers.get(i).getStores().get(i).getProducts().size(); k++) {
-                    System.out.println(sellers.get(i).getStores().get(i).getProducts().get(k).getName());
-                    System.out.println(sellers.get(i).getStores().get(i).getProducts().get(k).getDescription());
-                    System.out.println(sellers.get(i).getStores().get(i).getProducts().get(k).getQuantityAvailable());
-                    System.out.println(sellers.get(i).getStores().get(i).getProducts().get(k).getPrice());
+        ArrayList<Product> sortedProducts = new ArrayList<>();
+        int index = -1;
+        int size = list.size();
+        while (sortedProducts.size() < size) {
+            int quant = -1;
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i).getQuantityAvailable() >= quant) {
+                    quant = list.get(i).getQuantityAvailable();
+                    index = i;
                 }
             }
+            sortedProducts.add(list.get(index));
+            list.remove(index);
+        }
+
+        for (int i = 0; i < sortedProducts.size(); i++) {
+            System.out.println("*************************");
+            System.out.println(sortedProducts.get(i).getNameOfStore());
+            System.out.println("*************************");
+            System.out.println(sortedProducts.get(i).getName());
+            System.out.println(sortedProducts.get(i).getDescription());
+            System.out.println(sortedProducts.get(i).getQuantityAvailable() + " units");
+            System.out.printf("$%.2f\n", sortedProducts.get(i).getPrice());
         }
     }
 
