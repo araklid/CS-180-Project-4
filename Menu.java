@@ -172,7 +172,7 @@ public class Menu {
         } else if (entry.equals("quantity")) {
             displayByQuantity(sellers, list); // currently doesn't work
         } else if (entry.equals("price")) {
-            displayByCost(sellers, list); // currently doesn't work
+            displayByCost(sellers, list);
         }
 
         System.out.println("Enter the name of the product, or enter (again) to search again: ");
@@ -212,37 +212,49 @@ public class Menu {
 
         for (int i = 0; i < sellers.size(); i++) {
             for (int j = 0; j < sellers.get(i).getStores().size(); j++) {
-                System.out.println("****************************************");
+                System.out.println("*************************");
                 System.out.println(sellers.get(i).getStores().get(j).getName());
-                System.out.println("****************************************");
+                System.out.println("*************************");
                 for (int k = 0; k < sellers.get(i).getStores().get(j).getProducts().size(); k++) {
                     System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getName());
                     System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getDescription());
-                    System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getQuantityAvailable());
-                    System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getPrice());
+                    System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getQuantityAvailable() + " units");
+                    System.out.printf("$%.2f", sellers.get(i).getStores().get(j).getProducts().get(k).getPrice());
                     list.add(sellers.get(i).getStores().get(j).getProducts().get(k));
-                    System.out.println("----------------------------------------");
+                    System.out.println("\n------------------------");
 
                 }
             }
         }
-
         return list;
     }
-    
+
 
     public static void displayByCost(ArrayList<Seller> sellers, ArrayList<Product> list) {
-
-        for (int i = 0; i < sellers.size(); i++) {
-            for (int j = 0; j < sellers.get(i).getStores().size(); j++) {
-                System.out.println(sellers.get(i).getStores().get(j).getName());
-                for (int k = 0; k < sellers.get(i).getStores().get(i).getProducts().size(); k++) {
-                    System.out.println(sellers.get(i).getStores().get(i).getProducts().get(k).getName());
-                    System.out.println(sellers.get(i).getStores().get(i).getProducts().get(k).getDescription());
-                    System.out.println(sellers.get(i).getStores().get(i).getProducts().get(k).getQuantityAvailable());
-                    System.out.println(sellers.get(i).getStores().get(i).getProducts().get(k).getPrice());
+        System.out.println("AAAAAAAAAA");
+        ArrayList<Product> sortedProducts = new ArrayList<>();
+        int index = -1;
+        int size = list.size();
+        while (sortedProducts.size() < size) {
+            double price = -1;
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i).getPrice() >= price) {
+                    price = list.get(i).getPrice();
+                    index = i;
                 }
             }
+            sortedProducts.add(list.get(index));
+            list.remove(index);
+        }
+
+        for (int i = 0; i < sortedProducts.size(); i++) {
+            System.out.println("*************************");
+            System.out.println(sortedProducts.get(i).getNameOfStore());
+            System.out.println("*************************");
+            System.out.println(sortedProducts.get(i).getName());
+            System.out.println(sortedProducts.get(i).getDescription());
+            System.out.println(sortedProducts.get(i).getQuantityAvailable() + " units");
+            System.out.printf("$%.2f", sortedProducts.get(i).getPrice());
         }
     }
 
@@ -616,13 +628,7 @@ public class Menu {
                                 + customers.get(i).getShoppingCart().get(j).getName() + ","
                                 + customers.get(i).getShoppingCart().get(j).getDescription() + ","
                                 + customers.get(i).getShoppingCart().get(j).getQuantityAvailable() + ","
-                                + customers.get(i).getShoppingCart().get(j).getPrice());
-
-                        System.out.println(customers.get(i).getShoppingCart().get(j).getNameOfStore() + ","
-                                + customers.get(i).getShoppingCart().get(j).getName() + ","
-                                + customers.get(i).getShoppingCart().get(j).getDescription() + ","
-                                + customers.get(i).getShoppingCart().get(j).getQuantityAvailable() + ","
-                                + customers.get(i).getShoppingCart().get(j).getPrice());
+                                + customers.get(i).getShoppingCart().get(j).getPrice() + "0");
                         if (j < customers.get(i).getShoppingCart().size() - 1) {
                             pw.write(",");
                         }
@@ -635,12 +641,7 @@ public class Menu {
                                 + customers.get(i).getPurchaseHistory().get(j).getName() + ","
                                 + customers.get(i).getPurchaseHistory().get(j).getDescription() + ","
                                 + customers.get(i).getPurchaseHistory().get(j).getQuantityAvailable() + ","
-                                + customers.get(i).getPurchaseHistory().get(j).getPrice());
-                        System.out.println("PH" + customers.get(i).getPurchaseHistory().get(j).getNameOfStore() + ","
-                                + customers.get(i).getPurchaseHistory().get(j).getName() + ","
-                                + customers.get(i).getPurchaseHistory().get(j).getDescription() + ","
-                                + customers.get(i).getPurchaseHistory().get(j).getQuantityAvailable() + ","
-                                + customers.get(i).getPurchaseHistory().get(j).getPrice());
+                                + customers.get(i).getPurchaseHistory().get(j).getPrice() + "0");
                         if (j < customers.get(i).getPurchaseHistory().size() - 1) {
                             pw.write(",");
                         }
