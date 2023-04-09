@@ -1,6 +1,5 @@
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
 /** Dilara Baysal
@@ -126,7 +125,6 @@ public class Menu {
                 sellerAccount(scan, seller);
             } else {
                 goodbye();
-                return;
             }
         } else if (slec.equals("c")) {
             System.out.println("Enter your username!\nQuit: (q)");
@@ -147,12 +145,10 @@ public class Menu {
                 customerAccount(scan, sellers, customer, customers);
             } else {
                 goodbye();
-                return;
             }
 
         } else if (slec.equals("q")) {
             goodbye();
-            return;
         } else {
             System.out.println("Not a valid entry!");
             create(scan, sellers, customers);
@@ -169,9 +165,9 @@ public class Menu {
         if (entry.equals("search")) {
             search(scan, sellers);
         } else if (entry.equals("quantity")) {
-            displayByQuantity(sellers, list); // currently doesnt work
+            displayByQuantity(sellers, list); // currently doesn't work
         } else if (entry.equals("price")) {
-            displayByCost(sellers, list); // currently doesnt work
+            displayByCost(sellers, list); // currently doesn't work
         }
 
         System.out.println("Enter the name of the product, or enter (again) to search again: ");
@@ -185,27 +181,19 @@ public class Menu {
                 for (int j = 0; j < sellers.get(i).getStores().size(); j++) {
                     for (int k = 0; k < sellers.get(j).getStores().get(j).getProducts().size(); k++) {
                         if (sellers.get(i).getStores().get(j).getProducts().get(k).getName().equals(entry)) {
-                            Product selected = sellers.get(i).getStores().get(j).getProducts().get(k);
-                            temp = true;
-                            return selected;
-                        } else {
-                            temp = false;
+                            return sellers.get(i).getStores().get(j).getProducts().get(k);
                         }
                     }
                 }
             }
-            if (temp == false) {
+            if (!temp) {
                 System.out.println("No product matches this entry, would you like to select another (y/n)?");
                 String yesOrNo = scan.nextLine();
                 if (yesOrNo.equals("y")) {
                     displayFunctions(scan, sellers);
-                } else {
-
                 }
             }
-
         }
-
         return null;
     }
 
@@ -280,14 +268,12 @@ public class Menu {
                         System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getQuantityAvailable());
                         System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getPrice());
                         return;
-                    } else {
-                        temp = false;
                     }
                 }
             }
         }
 
-        if (temp == false) {
+        if (!temp) {
             System.out.println("No product matches this entry, would you like to select another (y/n)?");
             String yesOrNo = scan.nextLine();
             if (yesOrNo.equals("y")) {
@@ -366,30 +352,14 @@ public class Menu {
             }
         } else if (slec.equals("q")) {
             goodbye();
-            return;
         } else {
             System.out.println("Not a valid entry!");
             logIn(scan, sellers, customers);
         }
     }
 
-    public static String[] findAccount(String fileName, String input) {
-        String[] listy = readFile(fileName);
-        String[] userInfo = null;
-
-        for (int i = 0; i < listy.length; i++) {
-            if (listy[i] != null && listy[i].toLowerCase().contains(input)) {
-                userInfo = listy[i].split(";");
-                if (userInfo[0].equals(input)) {
-                    return userInfo;
-                }
-            }
-        }
-        return userInfo = null;
-    }
-
     public static String[] readFile(String filePath) {
-        ArrayList<String> listy = new ArrayList<String>();
+        ArrayList<String> listy = new ArrayList<>();
 
         try (FileReader fr = new FileReader(filePath);
              BufferedReader bfr = new BufferedReader(fr)) {
@@ -426,7 +396,6 @@ public class Menu {
 
     public static void goodbye() {
         System.out.println("Goodbye!");
-        return;
     }
 
     public static void redo(Scanner scan, ArrayList<Seller> sellers, ArrayList<Customer> customers) {
@@ -438,7 +407,6 @@ public class Menu {
             create(scan, sellers, customers);
         } else if (redo.equals("q")) {
             goodbye();
-            return;
         } else {
             System.out.println("Not a valid entry!");
             redo(scan, sellers, customers);
@@ -467,9 +435,9 @@ public class Menu {
 
         } else if (selection.equals("q")) {
             goodbye();
-            return;
         } else if (selection.equals("hist")) {
             if (customer.getPurchaseHistory().size() != 0) {
+                /*
                 try {
                     File csvFile = new File(customer + "PurchaseHistory.csv");
                     FileWriter fw = new FileWriter(csvFile);
@@ -482,22 +450,30 @@ public class Menu {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                 */
+                for (int i = 0; i < customer.getPurchaseHistory().size(); i++) {
+                    System.out.println(customer.getPurchaseHistory().get(i).getName() + ", "
+                            + customer.getPurchaseHistory().get(i).getNameOfStore() + ", "
+                            + customer.getPurchaseHistory().get(i).getDescription() + ", "
+                            + customer.getPurchaseHistory().get(i).getPrice());
+                }
             } else {
                 System.out.println("Your purchase history is empty!");
             }
         } else if (selection.equals("cart")) {
             if (customer.getShoppingCart().size() != 0) {
+                for (int i = 0; i < customer.getShoppingCart().size(); i++) {
+                    System.out.println(customer.getShoppingCart().get(i).getName() + ", "
+                            + customer.getShoppingCart().get(i).getNameOfStore() + ", "
+                            + customer.getShoppingCart().get(i).getDescription() + ", "
+                            + customer.getShoppingCart().get(i).getPrice());
+                }
+                /*
                 try {
                     File csvFile = new File(customer + "ShoppingCart.csv");
                     FileWriter fw = new FileWriter(csvFile);
                     for (int i = 0; i < customer.getShoppingCart().size(); i++) {
-                        /*fw.write(customer.getShoppingCart().get(i).getName() + ", "
-                                + customer.getShoppingCart().get(i).getNameOfStore() + ", "
-                                + customer.getShoppingCart().get(i).getDescription() + ", "
-                                + customer.getShoppingCart().get(i).getPrice());
-                         */
-
-                        System.out.println(customer.getShoppingCart().get(i).getName() + ", "
+                        fw.write(customer.getShoppingCart().get(i).getName() + ", "
                                 + customer.getShoppingCart().get(i).getNameOfStore() + ", "
                                 + customer.getShoppingCart().get(i).getDescription() + ", "
                                 + customer.getShoppingCart().get(i).getPrice());
@@ -506,21 +482,47 @@ public class Menu {
                     e.printStackTrace();
                 }
 
-                System.out.println("Would you like to check out (check out), edit your cart, or return to shopping (return): ");
+                 */
+
+                System.out.println("Would you like to check out (check out), remove items from your cart (remove), return to shopping (return), or quit (q): ");
                 String next = scan.nextLine();
 
                 if (next.equals("check out")) {
                     for (int i = 0; i < customer.getShoppingCart().size(); i++) {
-                        
+                        customer.addToPurchaseHistory(customer.getShoppingCart().get(i));
+                        customer.removeFromShoppingCart(customer.getShoppingCart().get(i));
                     }
+                    customerAccount(scan, sellers, customer, customers);
+                } else if (next.equals("remove")) {
+                    System.out.println("Which product would you like to remove?");
+                    String remove = scan.nextLine();
+                    for (int i = 0; i < customer.getShoppingCart().size(); i++) {
+                        if (customer.getShoppingCart().get(i).getName().equals(remove)) {
+                            customer.getShoppingCart().remove(customer.getShoppingCart().get(i));
+                        }
+                    }
+                    for (int i = 0; i < customer.getShoppingCart().size(); i++) {
+                        System.out.println(customer.getShoppingCart().get(i).getName() + ", "
+                                + customer.getShoppingCart().get(i).getNameOfStore() + ", "
+                                + customer.getShoppingCart().get(i).getDescription() + ", "
+                                + customer.getShoppingCart().get(i).getPrice());
+                    }
+                    customerAccount(scan, sellers, customer, customers);
+                } else if (next.equals("return")) {
+                    customerAccount(scan, sellers, customer, customers);
                 }
             } else {
                 System.out.println("Your shopping cart is empty!");
                 customerAccount(scan, sellers, customer, customers);
             }
+        } else if (selection.equals("hist")) {
+            for (int i = 0; i < customer.getPurchaseHistory().size(); i++) {
+                System.out.println(customer.getPurchaseHistory().get(i).getName() + ", "
+                        + customer.getPurchaseHistory().get(i).getNameOfStore() + ", "
+                        + customer.getPurchaseHistory().get(i).getDescription() + ", "
+                        + customer.getPurchaseHistory().get(i).getPrice());
+            }
         }
-        //cart
-        //purchase history
     }
 
     public static void sellerAccount(Scanner scan, Seller seller) {
@@ -550,8 +552,6 @@ public class Menu {
 
 
         } else if (sOptions.equals("3")) {
-            //TODO: print the stores, ask which store to look at
-            //TODO: once store is selected, print the products
 
             if (seller.getStores().size() > 0) {
 
@@ -589,7 +589,7 @@ public class Menu {
                     System.out.println("What is the product's name?");
                     String prodSlec = scan.nextLine();
                     for (int j = 0; j < seller.getStores().get(i).getProducts().size(); j++) {
-                        if (seller.getStores().get(i).getProducts().get(j).equals(prodSlec)) {
+                        if (seller.getStores().get(i).getProducts().get(j).getName().equals(prodSlec)) {
                             System.out.println("Enter the new name: ");
                             String newName = scan.nextLine();
                             System.out.println("Enter the new description: ");
@@ -613,9 +613,5 @@ public class Menu {
                 }
             }
         }
-    }
-
-    public static void dashboard() {
-
     }
 }
