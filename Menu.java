@@ -125,7 +125,6 @@ public class Menu {
                 String password = scan.nextLine();
 
                 Seller seller = new Seller(userName, password);
-                sellers.add(seller);
                 System.out.println("Welcome " + seller.getUsername() + "!");
                 sellerAccount(scan, seller);
             } else {
@@ -144,8 +143,8 @@ public class Menu {
 
                 System.out.println("Enter your password!\nQuit: (q)");
                 String password = scan.nextLine();
+
                 Customer customer = new Customer(userName, password);
-                customers.add(customer);
                 System.out.println("Welcome " + customer.getUsername() + "!");
                 customerAccount(scan, sellers, customer, customers);
             } else {
@@ -184,10 +183,8 @@ public class Menu {
             boolean temp = false;
             for (int i = 0; i < sellers.size(); i++) {
                 for (int j = 0; j < sellers.get(i).getStores().size(); j++) {
-                    for (int k = 0; k < sellers.get(i).getStores().get(j).getProducts().size(); k++) {
-                        if (sellers.get(i).getStores().get(j).getProducts().get(k).getName().toLowerCase().equals(prodNamMaybe.toLowerCase())) {
-                            temp = true;
-                            System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getName());
+                    for (int k = 0; k < sellers.get(j).getStores().get(j).getProducts().size(); k++) {
+                        if (sellers.get(i).getStores().get(j).getProducts().get(k).getName().equals(entry)) {
                             return sellers.get(i).getStores().get(j).getProducts().get(k);
                         }
                     }
@@ -198,8 +195,6 @@ public class Menu {
                 String yesOrNo = scan.nextLine();
                 if (yesOrNo.equals("y")) {
                     displayFunctions(scan, sellers);
-                } else {
-                    goodbye();
                 }
             }
         }
@@ -211,28 +206,47 @@ public class Menu {
 
         for (int i = 0; i < sellers.size(); i++) {
             for (int j = 0; j < sellers.get(i).getStores().size(); j++) {
-                System.out.println("****************************************");
+                System.out.println("*****************************************");
                 System.out.println(sellers.get(i).getStores().get(j).getName());
-                System.out.println("****************************************");
+                System.out.println("*****************************************");
                 for (int k = 0; k < sellers.get(i).getStores().get(j).getProducts().size(); k++) {
                     System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getName());
                     System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getDescription());
-                    System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getQuantityAvailable());
-                    System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getPrice());
+                    System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getQuantityAvailable() + " units");
+                    System.out.println("$" + sellers.get(i).getStores().get(j).getProducts().get(k).getPrice());
                     list.add(sellers.get(i).getStores().get(j).getProducts().get(k));
-                    System.out.println("----------------------------------------");
+                    System.out.println("-------------------------------------------");
 
                 }
             }
         }
-
-        return list;
+        ArrayList<Product> sortedProducts = new ArrayList<>();
+        int index = -1;
+        int lastIndex = -1;
+        int size = list.size();
+        while (sortedProducts.size() < size) {
+            double price = -1;
+            for (int i = 0; i < list.size(); i++) {
+                if (list.get(i).getPrice() >= price) {
+                    price = list.get(i).getPrice();
+                    index = i;
+                }
+            }
+            sortedProducts.add(list.get(index));
+            list.remove(index);
+        }
+        return sortedProducts;
     }
     
 
     public static void displayByCost(ArrayList<Seller> sellers, ArrayList<Product> list) {
-
-        for (int i = 0; i < sellers.size(); i++) {
+        for (int i = 0; i < list.size(); i++) {
+            System.out.println(list.get(i).getName());
+            System.out.println(list.get(i).getDescription());
+            System.out.println(list.get(i).getQuantityAvailable() + " units");
+            System.out.println("$" + list.get(i).getPrice());
+        }
+        /**for (int i = 0; i < sellers.size(); i++) {
             for (int j = 0; j < sellers.get(i).getStores().size(); j++) {
                 System.out.println(sellers.get(i).getStores().get(j).getName());
                 for (int k = 0; k < sellers.get(i).getStores().get(i).getProducts().size(); k++) {
@@ -244,7 +258,8 @@ public class Menu {
             }
         }
     }
-
+    **/
+    }
     public static void displayByQuantity(ArrayList<Seller> sellers, ArrayList<Product> list) {
         for (int i = 0; i < sellers.size(); i++) {
             for (int j = 0; j < sellers.get(i).getStores().size(); j++) {
@@ -264,7 +279,6 @@ public class Menu {
         String product = scan.nextLine();
 
         boolean temp = false;
-        System.out.println("------------------------------------");
 
         for (int i = 0; i < sellers.size(); i++) {
             for (int j = 0; j < sellers.get(i).getStores().size(); j++) {
@@ -277,8 +291,7 @@ public class Menu {
                         System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getDescription());
                         System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getQuantityAvailable());
                         System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getPrice());
-                        temp = true;
-                        System.out.println("------------------------------------");
+                        return;
                     }
                 }
             }
@@ -290,7 +303,7 @@ public class Menu {
             if (yesOrNo.equals("y")) {
                 displayFunctions(scan, sellers);
             } else {
-                goodbye();
+
             }
         }
     }
@@ -439,17 +452,15 @@ public class Menu {
                 System.out.println("Nice choice, you've just purchased " + productSelection.getName());
                 productSelection.setQuantityAvailable(productSelection.getQuantityAvailable() - 1);
                 customer.addToPurchaseHistory(productSelection);
-                customerAccount(scan, sellers, customer, customers);
-
             } else if (temp.equals("2")) {
                 System.out.println("Added " + productSelection.getName() + " to cart");
                 customer.addToShoppingCart(productSelection);
-                customerAccount(scan, sellers, customer, customers);
             }
 
         } else if (selection.equals("q")) {
             goodbye();
         } else if (selection.equals("hist")) {
+            System.out.println(customer.getPurchaseHistory());
             if (customer.getPurchaseHistory().size() != 0 || customer.getPurchaseHistory() == null) {
                 for (int i = 0; i < customer.getPurchaseHistory().size(); i++) {
                     System.out.println(customer.getPurchaseHistory().get(i).getName() + ", "
@@ -462,6 +473,7 @@ public class Menu {
                 customerAccount(scan, sellers, customer, customers);
             }
         } else if (selection.equals("cart")) {
+            System.out.println(customer.getShoppingCart());
 
             if (customer.getShoppingCart().size() != 0 || customer.getShoppingCart() == null) {
                 for (int i = 0; i < customer.getShoppingCart().size(); i++) {
@@ -594,13 +606,4 @@ public class Menu {
             }
         }
     }
-
-    public static void writeCustomers(Customer[] customers) {
-
-    }
-
-    public static void writeSellers(Seller[] sellers) {
-
-    }
-
 }
