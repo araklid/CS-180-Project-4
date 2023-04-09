@@ -7,4 +7,3 @@ sloth;slothed;;
 moose;moosed;;
 fox;foxed;;
 werston;walker;;
-weston;walker;;A1shop,Toothpaste,description,29,5.00

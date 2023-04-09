@@ -41,24 +41,26 @@ public class Menu {
     public static ArrayList<Seller> setSellers() {
         String[] sellerData = readFile("Sellers.txt");
         ArrayList<Seller> sellers = new ArrayList<>();
-        for (int i = 0; i < sellerData.length; i++) {
-            String[] dataLine = sellerData[i].split(";");
-            Seller seller = new Seller(dataLine[0], dataLine[1]);
+        if (sellerData.length > 0) {
+            for (int i = 0; i < sellerData.length; i++) {
+                String[] dataLine = sellerData[i].split(";");
+                Seller seller = new Seller(dataLine[0], dataLine[1]);
 
-            for (int j = 2; j < dataLine.length; j++) {
-                String[] storeData = dataLine[j].split(",");
-                Store[] stores = new Store[storeData.length - 1];
+                for (int j = 2; j < dataLine.length; j++) {
+                    String[] storeData = dataLine[j].split(",");
+                    Store[] stores = new Store[storeData.length - 1];
 
-                stores[j] = new Store(storeData[0]);
-                for (int k = 1; k < storeData.length - 1; k = k + 4) {
-                    Product product = new Product(storeData[0], storeData[k],
-                            storeData[k + 1], Integer.parseInt(storeData[k + 2]),
-                            Double.parseDouble(storeData[k + 3]));
-                    stores[j].addProduct(product);
+                    stores[j] = new Store(storeData[0]);
+                    for (int k = 1; k < storeData.length - 1; k = k + 4) {
+                        Product product = new Product(storeData[0], storeData[k],
+                                storeData[k + 1], Integer.parseInt(storeData[k + 2]),
+                                Double.parseDouble(storeData[k + 3]));
+                        stores[j].addProduct(product);
+                    }
+                    seller.addStores(stores[j]);
                 }
-                seller.addStores(stores[j]);
+                sellers.add(seller);
             }
-            sellers.add(seller);
 
         }
 
@@ -69,38 +71,40 @@ public class Menu {
     public static ArrayList<Customer> setCustomers() {
         String[] customerData = readFile("Customers.txt");
         ArrayList<Customer> customers = new ArrayList<>();
-        for (int i = 0; i < customerData.length; i++) {
-            String[] dataLine = customerData[i].split(";");
-            Customer customer = new Customer(dataLine[0], dataLine[1]);
-            //customer file: username;pass;shoppingcart;purchasehistory
-            //shoppingcart and purchase history are not organized by shop
+        if (customerData.length > 0) {
+            for (int i = 0; i < customerData.length; i++) {
+                String[] dataLine = customerData[i].split(";");
+                Customer customer = new Customer(dataLine[0], dataLine[1]);
+                //customer file: username;pass;shoppingcart;purchasehistory
+                //shoppingcart and purchase history are not organized by shop
 
-            if (dataLine.length > 2) {
-                String[] shoppingCart = dataLine[2].split(",");
+                if (dataLine.length > 2) {
+                    String[] shoppingCart = dataLine[2].split(",");
 
-                for (int j = 0; j < shoppingCart.length; j = j + 5) {
-                    customer.addToShoppingCart(new Product(shoppingCart[j],
-                            shoppingCart[j + 1], shoppingCart[j + 2],
-                            Integer.parseInt(shoppingCart[j + 3]),
-                            Double.parseDouble(shoppingCart[j + 4])));
+                    for (int j = 0; j < shoppingCart.length; j = j + 5) {
+                        customer.addToShoppingCart(new Product(shoppingCart[j],
+                                shoppingCart[j + 1], shoppingCart[j + 2],
+                                Integer.parseInt(shoppingCart[j + 3]),
+                                Double.parseDouble(shoppingCart[j + 4])));
+                    }
+                } else {
+                    customer.setShoppingCart(new ArrayList<>());
                 }
-            } else {
-                customer.setShoppingCart(new ArrayList<>());
-            }
 
-            if (dataLine.length > 3) {
-                String[] purchaseHistory = dataLine[3].split(",");
+                if (dataLine.length > 3) {
+                    String[] purchaseHistory = dataLine[3].split(",");
 
-                for (int j = 0; j < purchaseHistory.length; j = j + 5) {
-                    customer.addToPurchaseHistory(new Product(purchaseHistory[j],
-                            purchaseHistory[j + 1], purchaseHistory[j + 2],
-                            Integer.parseInt(purchaseHistory[j + 3]),
-                            Double.parseDouble(purchaseHistory[j + 4])));
+                    for (int j = 0; j < purchaseHistory.length; j = j + 5) {
+                        customer.addToPurchaseHistory(new Product(purchaseHistory[j],
+                                purchaseHistory[j + 1], purchaseHistory[j + 2],
+                                Integer.parseInt(purchaseHistory[j + 3]),
+                                Double.parseDouble(purchaseHistory[j + 4])));
+                    }
+                } else {
+                    customer.setPurchaseHistory(new ArrayList<>());
                 }
-            } else {
-                customer.setPurchaseHistory(new ArrayList<>());
+                customers.add(customer);
             }
-            customers.add(customer);
         }
         return customers;
     }
@@ -127,7 +131,7 @@ public class Menu {
                 Seller seller = new Seller(userName, password);
                 sellers.add(seller);
                 System.out.println("Welcome " + seller.getUsername() + "!");
-                sellerAccount(scan, seller);
+                sellerAccount(scan, seller, sellers);
             } else {
                 System.out.println("Goodbye!");
             }
@@ -316,6 +320,7 @@ public class Menu {
                 displayFunctions(scan, sellers, customers);
             } else {
                 System.out.println("Goodbye!");
+                writeCustomers(customers);
             }
         }
     }
@@ -340,7 +345,7 @@ public class Menu {
                             if (sellers.get(i).getPassword().equals(password)) {
                                 System.out.println("Welcome " + userName + "!");
                                 Seller seller = sellers.get(i);
-                                sellerAccount(scan, seller);
+                                sellerAccount(scan, seller, sellers);
 
                             } else {
                                 System.out.println("Your password is incorrect!");
@@ -415,8 +420,6 @@ public class Menu {
         return (listy.toArray(new String[listy.size()]));
     }
 
-    //mongoose;mongoosed;Potted Plant,M1shop,description,4,10 dollars,Growth Dirt,M1shop,description,9,30 dollars;Painting,M2shop,description,7,10 dollar
-
     public static void write(String fileName, String userName, String password) {
         try {
             FileOutputStream fos = new FileOutputStream(fileName, true);
@@ -447,10 +450,10 @@ public class Menu {
 
     public static void customerAccount(Scanner scan, ArrayList<Seller> sellers, Customer customer, ArrayList<Customer> customers) {
         //dashboard
-        System.out.println("Would you like to view products (view), view your shopping cart (cart), export your purchase history (hist), view your statistics (stats) or quit (q)?");
+        System.out.println("Would you like to view products (view), view your shopping cart (cart), export your purchase history (hist), or quit (q)?");
         String selection = scan.nextLine();
 
-        if (selection.equalsIgnoreCase("view")) {
+        if (selection.equals("view")) {
             Product productSelection = displayFunctions(scan, sellers, customers);
             System.out.println("Would you like to purchase " + productSelection.getName() + ", or add to cart?");
             System.out.println("1. Purchase\n2. Add");
@@ -468,10 +471,10 @@ public class Menu {
                 customerAccount(scan, sellers, customer, customers);
             }
 
-        } else if (selection.equalsIgnoreCase("q")) {
+        } else if (selection.equals("q")) {
             System.out.println("Goodbye!");
             writeCustomers(customers);
-        } else if (selection.equalsIgnoreCase("hist")) {
+        } else if (selection.equals("hist")) {
             if (customer.getPurchaseHistory().size() != 0 || customer.getPurchaseHistory() == null) {
                 for (int i = 0; i < customer.getPurchaseHistory().size(); i++) {
                     System.out.println(customer.getPurchaseHistory().get(i).getName() + ", "
@@ -484,7 +487,8 @@ public class Menu {
                 System.out.println("Your purchase history is empty!");
                 customerAccount(scan, sellers, customer, customers);
             }
-        } else if (selection.equalsIgnoreCase("cart")) {
+        } else if (selection.equals("cart")) {
+
             if (customer.getShoppingCart().size() != 0 || customer.getShoppingCart() == null) {
                 for (int i = 0; i < customer.getShoppingCart().size(); i++) {
                     System.out.println(customer.getShoppingCart().get(i).getName() + ", "
@@ -528,27 +532,18 @@ public class Menu {
                 System.out.println("Your shopping cart is empty!");
                 customerAccount(scan, sellers, customer, customers);
             }
-        } else if (selection.equalsIgnoreCase("stats")) {
-            viewCustomerStats(customer);
-        } else {
-            do {
-                System.out.println("Invalid Selection. Please try again.");
-                System.out.println("Would you like to view products (view), view your shopping cart (cart), export your purchase history (hist), view your statistics (stats) or quit (q)?");
-                selection = scan.nextLine();
-            } while (!(selection.equalsIgnoreCase("view") || selection.equalsIgnoreCase("cart") || selection.equalsIgnoreCase("hist") || selection.equalsIgnoreCase("stats") || selection.equalsIgnoreCase("q")));
         }
-
     }
 
-    public static void sellerAccount(Scanner scan, Seller seller) {
-        System.out.println("Would you like to view statistics dashboard (1), import products (2), export products (3), edit products (4)?, view your statistics (5)?");
+    public static void sellerAccount(Scanner scan, Seller seller, ArrayList<Seller> sellers) {
+        System.out.println("Would you like to view statistics dashboard (1), import products (2), export products (3), edit products (4), or quit (q)?");
         String sOptions = scan.nextLine();
-        if (sOptions.equalsIgnoreCase("1")) {
+        if (sOptions.equals("1")) {
             //TODO: include amount of products in customer cart
             //TODO: allow for sorting by: name, amount in cart, amount in store, etc
 
-            sellerAccount(scan, seller);
-        } else if (sOptions.equalsIgnoreCase("2")) {
+            sellerAccount(scan, seller, sellers);
+        } else if (sOptions.equals("2")) {
             System.out.println("Enter the filepath (products should be on separate lines):");
             String path = scan.nextLine();
             String[] sell = readFile(path);
@@ -564,8 +559,8 @@ public class Menu {
                     }
                 }
             }
-            sellerAccount(scan, seller);
-        } else if (sOptions.equalsIgnoreCase("3")) {
+            sellerAccount(scan, seller, sellers);
+        } else if (sOptions.equals("3")) {
 
             if (seller.getStores().size() > 0) {
 
@@ -594,8 +589,8 @@ public class Menu {
             } else {
                 System.out.println("Store is empty.");
             }
-            sellerAccount(scan, seller);
-        } else if (sOptions.equalsIgnoreCase("4")) {
+            sellerAccount(scan, seller, sellers);
+        } else if (sOptions.equals("4")) {
             //print dashboard
             System.out.println("Which store is this product located in?");
             String storeSlec = scan.nextLine();
@@ -627,9 +622,10 @@ public class Menu {
                     }
                 }
             }
-            sellerAccount(scan, seller);
-        } else if (sOptions.equalsIgnoreCase("5")) {
-            viewSellerStats();
+            sellerAccount(scan, seller, sellers);
+        } else if (sOptions.equals("q")) {
+            System.out.println("Goodbye!");
+            writeSellers(sellers);
         }
     }
 
@@ -679,52 +675,38 @@ public class Menu {
     }
 
     public static void writeSellers(ArrayList<Seller> sellers) {
+        try {
+            FileOutputStream fos = new FileOutputStream("Sellers.txt", false);
+            PrintWriter pw = new PrintWriter(fos);
 
-    }
+            for (int i = 0; i < sellers.size(); i++) {
+                pw.write(sellers.get(i).getUsername());
+                pw.write(";");
+                pw.write(sellers.get(i).getPassword());
+                pw.write(";");
+                if (sellers.get(i).getStores() != null) {
+                    for (int j = 0; j < sellers.get(i).getStores().size(); j++) {
+                        pw.write(sellers.get(i).getStores().get(j).getName());
+                        for (int k = 0; k < sellers.get(i).getStores().get(j).getProducts().size(); k++) {
+                            pw.write(sellers.get(i).getStores().get(j).getProducts().get(k).getName() + ","
+                                    + sellers.get(i).getStores().get(j).getProducts().get(k).getDescription() + ","
+                                    + sellers.get(i).getStores().get(j).getProducts().get(k).getQuantityAvailable() + ","
+                                    + sellers.get(i).getStores().get(j).getProducts().get(k).getPrice() + "0");
+                            if (k < sellers.get(i).getStores().get(j).getProducts().size() - 1) {
+                                pw.write(",");
+                            }
+                        }
+                        pw.write(";");
+                    }
+                    pw.write("\n");
+                }
+            }
 
-    public static void viewCustomerStats(Customer customer) {
-        // Read in the products via readProduct function
-        ArrayList<String> productList = readProducts();
-
-
-
-        // Make the dashboard
-            // List stores by num of products sold
-                //
-            // Need history of previous purchases
-                //
-        // Sort by diff things
-    }
-
-    public static void viewSellerStats() {
-
-    }
-
-    public static ArrayList<String> readProducts() throws IOException {
-        BufferedReader bfr = new BufferedReader(new FileReader("Sellers.txt"));
-
-        ArrayList<String> storesQuantities = new ArrayList<>();
-        ArrayList<String> lines = new ArrayList<>();
-        String fileLine = bfr.readLine();
-
-        while (fileLine != null) {
-            lines.add(fileLine);
-            fileLine = bfr.readLine();
+            pw.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
 
-        String[] splitLine = new String[3];
-        String[] hold = new String[lines.size()];
-        for (int i = 0; i < lines.size(); i++) {
-            splitLine = lines.get(i).split(";");
-            hold[i] = splitLine[2];
-        }
-
-
-        for (int i = 0; i < hold.length; i++) {
-
-
-        }
-
-        return storesQuantities;
     }
+
 }
