@@ -316,7 +316,6 @@ public class Menu {
                 displayFunctions(scan, sellers, customers);
             } else {
                 System.out.println("Goodbye!");
-                writeCustomers(customers);
             }
         }
     }
@@ -448,10 +447,10 @@ public class Menu {
 
     public static void customerAccount(Scanner scan, ArrayList<Seller> sellers, Customer customer, ArrayList<Customer> customers) {
         //dashboard
-        System.out.println("Would you like to view products (view), view your shopping cart (cart), export your purchase history (hist), or quit (q)?");
+        System.out.println("Would you like to view products (view), view your shopping cart (cart), export your purchase history (hist), view your statistics (stats) or quit (q)?");
         String selection = scan.nextLine();
 
-        if (selection.equals("view")) {
+        if (selection.equalsIgnoreCase("view")) {
             Product productSelection = displayFunctions(scan, sellers, customers);
             System.out.println("Would you like to purchase " + productSelection.getName() + ", or add to cart?");
             System.out.println("1. Purchase\n2. Add");
@@ -469,10 +468,10 @@ public class Menu {
                 customerAccount(scan, sellers, customer, customers);
             }
 
-        } else if (selection.equals("q")) {
+        } else if (selection.equalsIgnoreCase("q")) {
             System.out.println("Goodbye!");
             writeCustomers(customers);
-        } else if (selection.equals("hist")) {
+        } else if (selection.equalsIgnoreCase("hist")) {
             if (customer.getPurchaseHistory().size() != 0 || customer.getPurchaseHistory() == null) {
                 for (int i = 0; i < customer.getPurchaseHistory().size(); i++) {
                     System.out.println(customer.getPurchaseHistory().get(i).getName() + ", "
@@ -485,8 +484,7 @@ public class Menu {
                 System.out.println("Your purchase history is empty!");
                 customerAccount(scan, sellers, customer, customers);
             }
-        } else if (selection.equals("cart")) {
-
+        } else if (selection.equalsIgnoreCase("cart")) {
             if (customer.getShoppingCart().size() != 0 || customer.getShoppingCart() == null) {
                 for (int i = 0; i < customer.getShoppingCart().size(); i++) {
                     System.out.println(customer.getShoppingCart().get(i).getName() + ", "
@@ -530,18 +528,27 @@ public class Menu {
                 System.out.println("Your shopping cart is empty!");
                 customerAccount(scan, sellers, customer, customers);
             }
+        } else if (selection.equalsIgnoreCase("stats")) {
+            viewCustomerStats(customer);
+        } else {
+            do {
+                System.out.println("Invalid Selection. Please try again.");
+                System.out.println("Would you like to view products (view), view your shopping cart (cart), export your purchase history (hist), view your statistics (stats) or quit (q)?");
+                selection = scan.nextLine();
+            } while (!(selection.equalsIgnoreCase("view") || selection.equalsIgnoreCase("cart") || selection.equalsIgnoreCase("hist") || selection.equalsIgnoreCase("stats") || selection.equalsIgnoreCase("q")));
         }
+
     }
 
     public static void sellerAccount(Scanner scan, Seller seller) {
-        System.out.println("Would you like to view statistics dashboard (1), import products (2), export products (3), edit products (4)?");
+        System.out.println("Would you like to view statistics dashboard (1), import products (2), export products (3), edit products (4)?, view your statistics (5)?");
         String sOptions = scan.nextLine();
-        if (sOptions.equals("1")) {
+        if (sOptions.equalsIgnoreCase("1")) {
             //TODO: include amount of products in customer cart
             //TODO: allow for sorting by: name, amount in cart, amount in store, etc
 
             sellerAccount(scan, seller);
-        } else if (sOptions.equals("2")) {
+        } else if (sOptions.equalsIgnoreCase("2")) {
             System.out.println("Enter the filepath (products should be on separate lines):");
             String path = scan.nextLine();
             String[] sell = readFile(path);
@@ -558,7 +565,7 @@ public class Menu {
                 }
             }
             sellerAccount(scan, seller);
-        } else if (sOptions.equals("3")) {
+        } else if (sOptions.equalsIgnoreCase("3")) {
 
             if (seller.getStores().size() > 0) {
 
@@ -588,7 +595,7 @@ public class Menu {
                 System.out.println("Store is empty.");
             }
             sellerAccount(scan, seller);
-        } else if (sOptions.equals("4")) {
+        } else if (sOptions.equalsIgnoreCase("4")) {
             //print dashboard
             System.out.println("Which store is this product located in?");
             String storeSlec = scan.nextLine();
@@ -621,6 +628,8 @@ public class Menu {
                 }
             }
             sellerAccount(scan, seller);
+        } else if (sOptions.equalsIgnoreCase("5")) {
+            viewSellerStats();
         }
     }
 
@@ -673,4 +682,49 @@ public class Menu {
 
     }
 
+    public static void viewCustomerStats(Customer customer) {
+        // Read in the products via readProduct function
+        ArrayList<String> productList = readProducts();
+
+
+
+        // Make the dashboard
+            // List stores by num of products sold
+                //
+            // Need history of previous purchases
+                //
+        // Sort by diff things
+    }
+
+    public static void viewSellerStats() {
+
+    }
+
+    public static ArrayList<String> readProducts() throws IOException {
+        BufferedReader bfr = new BufferedReader(new FileReader("Sellers.txt"));
+
+        ArrayList<String> storesQuantities = new ArrayList<>();
+        ArrayList<String> lines = new ArrayList<>();
+        String fileLine = bfr.readLine();
+
+        while (fileLine != null) {
+            lines.add(fileLine);
+            fileLine = bfr.readLine();
+        }
+
+        String[] splitLine = new String[3];
+        String[] hold = new String[lines.size()];
+        for (int i = 0; i < lines.size(); i++) {
+            splitLine = lines.get(i).split(";");
+            hold[i] = splitLine[2];
+        }
+
+
+        for (int i = 0; i < hold.length; i++) {
+
+
+        }
+
+        return storesQuantities;
+    }
 }
