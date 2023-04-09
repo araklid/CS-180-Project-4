@@ -1,0 +1,6 @@
+mongoose;mongoosed;M1shop,Potted Plant,description,4,10.00,MiracleGro,description,9,30.00;M2shop,Painting,description,7,10.00
+goose;goosed;G1shop,Bird Seed,description,100,20.00,Bird Fountain,description,2,200.00;G2shop,Hammock,description,5,50.00
+frog;frogged;F1shop,Rocks,description,20,50.00,Tree Sapling,description,3,30.00;F2shop,Bug,description,300,0.50
+leopard;leoparded;L1shop,Bed Sheets,description,5,30.00,Pillowcases,description,5,10.00;L2shop,Cup,description,40,20.00
+ostrich;ostriched;O1shop,Forks,description,100,10.00,Knives,description,100,10.00;O2shop,Spoons,description,100,10.00
+alligator;alligatored;A1shop,Toothbrush,description,20,10.00,Toothpaste,description,30,5.00
