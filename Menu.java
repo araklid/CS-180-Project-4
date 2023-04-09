@@ -450,7 +450,7 @@ public class Menu {
 
     public static void customerAccount(Scanner scan, ArrayList<Seller> sellers, Customer customer, ArrayList<Customer> customers) {
         //dashboard
-        System.out.println("Would you like to view products (view), view your shopping cart (cart), export your purchase history (hist), or quit (q)?");
+        System.out.println("Would you like to view products (view), view your shopping cart (cart), export your purchase history (hist), view your statistics (stats), or quit (q)?");
         String selection = scan.nextLine();
 
         if (selection.equals("view")) {
@@ -532,6 +532,14 @@ public class Menu {
                 System.out.println("Your shopping cart is empty!");
                 customerAccount(scan, sellers, customer, customers);
             }
+        } else if (selection.equalsIgnoreCase("stats")) {
+            viewCustomerStats(customer);
+        } else {
+            do {
+                System.out.println("Invalid Selection. Please try again.");
+                System.out.println("Would you like to view products (view), view your shopping cart (cart), export your purchase history (hist), view your statistics (stats) or quit (q)?");
+                selection = scan.nextLine();
+            } while (!(selection.equalsIgnoreCase("view") || selection.equalsIgnoreCase("cart") || selection.equalsIgnoreCase("hist") || selection.equalsIgnoreCase("stats") || selection.equalsIgnoreCase("q")));
         }
     }
 
@@ -626,6 +634,8 @@ public class Menu {
         } else if (sOptions.equals("q")) {
             System.out.println("Goodbye!");
             writeSellers(sellers);
+        } else if (sOptions.equalsIgnoreCase("5")) {
+            viewSellerStats();
         }
     }
 
@@ -708,5 +718,55 @@ public class Menu {
         }
 
     }
+    public static void viewCustomerStats(Customer customer) {
+        // Read in the products via readProduct function
+        ArrayList<String> productList = readProducts();
 
+
+
+        // Make the dashboard
+        // List stores by num of products sold
+        //
+        // Need history of previous purchases
+        //
+        // Sort by diff things
+    }
+
+    public static void viewSellerStats() {
+
+    }
+
+    public static ArrayList<String> readProducts() {
+        try {
+            BufferedReader bfr = new BufferedReader(new FileReader("Sellers.txt"));
+
+
+            ArrayList<String> storesQuantities = new ArrayList<>();
+            ArrayList<String> lines = new ArrayList<>();
+            String fileLine = bfr.readLine();
+
+            while (fileLine != null) {
+                lines.add(fileLine);
+                fileLine = bfr.readLine();
+            }
+
+            String[] splitLine = new String[3];
+            String[] hold = new String[lines.size()];
+            for (int i = 0; i < lines.size(); i++) {
+                splitLine = lines.get(i).split(";");
+                hold[i] = splitLine[2];
+            }
+
+
+            for (int i = 0; i < hold.length; i++) {
+
+
+            }
+
+            return storesQuantities;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 }
