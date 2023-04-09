@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 /** Xaen Kaifee
+ * Weston Walker
  * 4/7/2023
  *
  */
@@ -16,7 +17,8 @@ public class CSVUtils {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] values = line.split(",");
-                Product product = new Product(values[0], values[1], Double.parseDouble(values[2]), Integer.parseInt(values[3]));
+                Product product = new Product(values[0], values[1], values[2], Integer.parseInt(values[3]),
+                        Double.parseDouble(values[3]));
                 products.add(product);
             }
         } catch (IOException e) {
@@ -30,11 +32,11 @@ public class CSVUtils {
             for (Product product : products) {
                 writer.append(product.getName())
                     .append(",")
-                    .append(product.getCategory())
+                    .append(product.getDescription())
+                    .append(",")
+                    .append(String.valueOf(product.getQuantityAvailable()))
                     .append(",")
                     .append(String.valueOf(product.getPrice()))
-                    .append(",")
-                    .append(String.valueOf(product.getQuantity()))
                     .append("\n");
             }
         } catch (IOException e) {
@@ -42,7 +44,7 @@ public class CSVUtils {
         }
     }
 
-    public static void exportPurchaseHistoryToCSV(List<Purchase> purchases, String filePath) {
+   public static void exportPurchaseHistoryToCSV(List<Purchase> purchases, String filePath) {
         try (FileWriter writer = new FileWriter(filePath)) {
             for (Purchase purchase : purchases) {
                 Product product = purchase.getProduct();
