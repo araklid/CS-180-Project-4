@@ -84,6 +84,8 @@ public class Menu {
                             Integer.parseInt(shoppingCart[j + 3]),
                             Double.parseDouble(shoppingCart[j + 4])));
                 }
+            } else {
+                customer.setShoppingCart(new ArrayList<>());
             }
 
             if (dataLine.length > 3) {
@@ -95,6 +97,8 @@ public class Menu {
                             Integer.parseInt(purchaseHistory[j + 3]),
                             Double.parseDouble(purchaseHistory[j + 4])));
                 }
+            } else {
+                customer.setPurchaseHistory(new ArrayList<>());
             }
             customers.add(customer);
         }
@@ -436,21 +440,8 @@ public class Menu {
         } else if (selection.equals("q")) {
             goodbye();
         } else if (selection.equals("hist")) {
-            if (customer.getPurchaseHistory().size() != 0) {
-                /*
-                try {
-                    File csvFile = new File(customer + "PurchaseHistory.csv");
-                    FileWriter fw = new FileWriter(csvFile);
-                    for (int i = 0; i < customer.getPurchaseHistory().size(); i++) {
-                        fw.write(customer.getPurchaseHistory().get(i).getName() + ", "
-                                + customer.getPurchaseHistory().get(i).getNameOfStore() + ", "
-                                + customer.getPurchaseHistory().get(i).getDescription() + ", "
-                                + customer.getPurchaseHistory().get(i).getPrice());
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                 */
+            System.out.println(customer.getPurchaseHistory());
+            if (customer.getPurchaseHistory().size() != 0 || customer.getPurchaseHistory() == null) {
                 for (int i = 0; i < customer.getPurchaseHistory().size(); i++) {
                     System.out.println(customer.getPurchaseHistory().get(i).getName() + ", "
                             + customer.getPurchaseHistory().get(i).getNameOfStore() + ", "
@@ -459,30 +450,18 @@ public class Menu {
                 }
             } else {
                 System.out.println("Your purchase history is empty!");
+                customerAccount(scan, sellers, customer, customers);
             }
         } else if (selection.equals("cart")) {
-            if (customer.getShoppingCart().size() != 0) {
+            System.out.println(customer.getShoppingCart());
+
+            if (customer.getShoppingCart().size() != 0 || customer.getShoppingCart() == null) {
                 for (int i = 0; i < customer.getShoppingCart().size(); i++) {
                     System.out.println(customer.getShoppingCart().get(i).getName() + ", "
                             + customer.getShoppingCart().get(i).getNameOfStore() + ", "
                             + customer.getShoppingCart().get(i).getDescription() + ", "
                             + customer.getShoppingCart().get(i).getPrice());
                 }
-                /*
-                try {
-                    File csvFile = new File(customer + "ShoppingCart.csv");
-                    FileWriter fw = new FileWriter(csvFile);
-                    for (int i = 0; i < customer.getShoppingCart().size(); i++) {
-                        fw.write(customer.getShoppingCart().get(i).getName() + ", "
-                                + customer.getShoppingCart().get(i).getNameOfStore() + ", "
-                                + customer.getShoppingCart().get(i).getDescription() + ", "
-                                + customer.getShoppingCart().get(i).getPrice());
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                 */
 
                 System.out.println("Would you like to check out (check out), remove items from your cart (remove), return to shopping (return), or quit (q): ");
                 String next = scan.nextLine();
@@ -514,13 +493,6 @@ public class Menu {
             } else {
                 System.out.println("Your shopping cart is empty!");
                 customerAccount(scan, sellers, customer, customers);
-            }
-        } else if (selection.equals("hist")) {
-            for (int i = 0; i < customer.getPurchaseHistory().size(); i++) {
-                System.out.println(customer.getPurchaseHistory().get(i).getName() + ", "
-                        + customer.getPurchaseHistory().get(i).getNameOfStore() + ", "
-                        + customer.getPurchaseHistory().get(i).getDescription() + ", "
-                        + customer.getPurchaseHistory().get(i).getPrice());
             }
         }
     }
