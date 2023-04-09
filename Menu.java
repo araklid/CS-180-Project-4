@@ -131,7 +131,7 @@ public class Menu {
                 Seller seller = new Seller(userName, password);
                 sellers.add(seller);
                 System.out.println("Welcome " + seller.getUsername() + "!");
-                sellerAccount(scan, seller);
+                sellerAccount(scan, seller, sellers);
             } else {
                 System.out.println("Goodbye!");
             }
@@ -345,7 +345,7 @@ public class Menu {
                             if (sellers.get(i).getPassword().equals(password)) {
                                 System.out.println("Welcome " + userName + "!");
                                 Seller seller = sellers.get(i);
-                                sellerAccount(scan, seller);
+                                sellerAccount(scan, seller, sellers);
 
                             } else {
                                 System.out.println("Your password is incorrect!");
@@ -535,14 +535,14 @@ public class Menu {
         }
     }
 
-    public static void sellerAccount(Scanner scan, Seller seller) {
-        System.out.println("Would you like to view statistics dashboard (1), import products (2), export products (3), edit products (4)?");
+    public static void sellerAccount(Scanner scan, Seller seller, ArrayList<Seller> sellers) {
+        System.out.println("Would you like to view statistics dashboard (1), import products (2), export products (3), edit products (4), or quit (q)?");
         String sOptions = scan.nextLine();
         if (sOptions.equals("1")) {
             //TODO: include amount of products in customer cart
             //TODO: allow for sorting by: name, amount in cart, amount in store, etc
 
-            sellerAccount(scan, seller);
+            sellerAccount(scan, seller, sellers);
         } else if (sOptions.equals("2")) {
             System.out.println("Enter the filepath (products should be on separate lines):");
             String path = scan.nextLine();
@@ -559,7 +559,7 @@ public class Menu {
                     }
                 }
             }
-            sellerAccount(scan, seller);
+            sellerAccount(scan, seller, sellers);
         } else if (sOptions.equals("3")) {
 
             if (seller.getStores().size() > 0) {
@@ -589,7 +589,7 @@ public class Menu {
             } else {
                 System.out.println("Store is empty.");
             }
-            sellerAccount(scan, seller);
+            sellerAccount(scan, seller, sellers);
         } else if (sOptions.equals("4")) {
             //print dashboard
             System.out.println("Which store is this product located in?");
@@ -622,7 +622,10 @@ public class Menu {
                     }
                 }
             }
-            sellerAccount(scan, seller);
+            sellerAccount(scan, seller, sellers);
+        } else if (sOptions.equals("q")) {
+            System.out.println("Goodbye!");
+            writeSellers(sellers);
         }
     }
 
@@ -672,6 +675,37 @@ public class Menu {
     }
 
     public static void writeSellers(ArrayList<Seller> sellers) {
+        try {
+            FileOutputStream fos = new FileOutputStream("Sellers.txt", false);
+            PrintWriter pw = new PrintWriter(fos);
+
+            for (int i = 0; i < sellers.size(); i++) {
+                pw.write(sellers.get(i).getUsername());
+                pw.write(";");
+                pw.write(sellers.get(i).getPassword());
+                pw.write(";");
+                if (sellers.get(i).getStores() != null) {
+                    for (int j = 0; j < sellers.get(i).getStores().size(); j++) {
+                        pw.write(sellers.get(i).getStores().get(j).getName());
+                        for (int k = 0; k < sellers.get(i).getStores().get(j).getProducts().size(); k++) {
+                            pw.write(sellers.get(i).getStores().get(j).getProducts().get(k).getName() + ","
+                                    + sellers.get(i).getStores().get(j).getProducts().get(k).getDescription() + ","
+                                    + sellers.get(i).getStores().get(j).getProducts().get(k).getQuantityAvailable() + ","
+                                    + sellers.get(i).getStores().get(j).getProducts().get(k).getPrice() + "0");
+                            if (k < sellers.get(i).getStores().get(j).getProducts().size() - 1) {
+                                pw.write(",");
+                            }
+                        }
+                        pw.write(";");
+                    }
+                    pw.write("\n");
+                }
+            }
+
+            pw.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
 
     }
 
