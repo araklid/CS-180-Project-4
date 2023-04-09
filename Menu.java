@@ -41,24 +41,26 @@ public class Menu {
     public static ArrayList<Seller> setSellers() {
         String[] sellerData = readFile("Sellers.txt");
         ArrayList<Seller> sellers = new ArrayList<>();
-        for (int i = 0; i < sellerData.length; i++) {
-            String[] dataLine = sellerData[i].split(";");
-            Seller seller = new Seller(dataLine[0], dataLine[1]);
+        if (sellerData.length > 0) {
+            for (int i = 0; i < sellerData.length; i++) {
+                String[] dataLine = sellerData[i].split(";");
+                Seller seller = new Seller(dataLine[0], dataLine[1]);
 
-            for (int j = 2; j < dataLine.length; j++) {
-                String[] storeData = dataLine[j].split(",");
-                Store[] stores = new Store[storeData.length - 1];
+                for (int j = 2; j < dataLine.length; j++) {
+                    String[] storeData = dataLine[j].split(",");
+                    Store[] stores = new Store[storeData.length - 1];
 
-                stores[j] = new Store(storeData[0]);
-                for (int k = 1; k < storeData.length - 1; k = k + 4) {
-                    Product product = new Product(storeData[0], storeData[k],
-                            storeData[k + 1], Integer.parseInt(storeData[k + 2]),
-                            Double.parseDouble(storeData[k + 3]));
-                    stores[j].addProduct(product);
+                    stores[j] = new Store(storeData[0]);
+                    for (int k = 1; k < storeData.length - 1; k = k + 4) {
+                        Product product = new Product(storeData[0], storeData[k],
+                                storeData[k + 1], Integer.parseInt(storeData[k + 2]),
+                                Double.parseDouble(storeData[k + 3]));
+                        stores[j].addProduct(product);
+                    }
+                    seller.addStores(stores[j]);
                 }
-                seller.addStores(stores[j]);
+                sellers.add(seller);
             }
-            sellers.add(seller);
 
         }
 
@@ -69,38 +71,40 @@ public class Menu {
     public static ArrayList<Customer> setCustomers() {
         String[] customerData = readFile("Customers.txt");
         ArrayList<Customer> customers = new ArrayList<>();
-        for (int i = 0; i < customerData.length; i++) {
-            String[] dataLine = customerData[i].split(";");
-            Customer customer = new Customer(dataLine[0], dataLine[1]);
-            //customer file: username;pass;shoppingcart;purchasehistory
-            //shoppingcart and purchase history are not organized by shop
+        if (customerData.length > 0) {
+            for (int i = 0; i < customerData.length; i++) {
+                String[] dataLine = customerData[i].split(";");
+                Customer customer = new Customer(dataLine[0], dataLine[1]);
+                //customer file: username;pass;shoppingcart;purchasehistory
+                //shoppingcart and purchase history are not organized by shop
 
-            if (dataLine.length > 2) {
-                String[] shoppingCart = dataLine[2].split(",");
+                if (dataLine.length > 2) {
+                    String[] shoppingCart = dataLine[2].split(",");
 
-                for (int j = 0; j < shoppingCart.length; j = j + 5) {
-                    customer.addToShoppingCart(new Product(shoppingCart[j],
-                            shoppingCart[j + 1], shoppingCart[j + 2],
-                            Integer.parseInt(shoppingCart[j + 3]),
-                            Double.parseDouble(shoppingCart[j + 4])));
+                    for (int j = 0; j < shoppingCart.length; j = j + 5) {
+                        customer.addToShoppingCart(new Product(shoppingCart[j],
+                                shoppingCart[j + 1], shoppingCart[j + 2],
+                                Integer.parseInt(shoppingCart[j + 3]),
+                                Double.parseDouble(shoppingCart[j + 4])));
+                    }
+                } else {
+                    customer.setShoppingCart(new ArrayList<>());
                 }
-            } else {
-                customer.setShoppingCart(new ArrayList<>());
-            }
 
-            if (dataLine.length > 3) {
-                String[] purchaseHistory = dataLine[3].split(",");
+                if (dataLine.length > 3) {
+                    String[] purchaseHistory = dataLine[3].split(",");
 
-                for (int j = 0; j < purchaseHistory.length; j = j + 5) {
-                    customer.addToPurchaseHistory(new Product(purchaseHistory[j],
-                            purchaseHistory[j + 1], purchaseHistory[j + 2],
-                            Integer.parseInt(purchaseHistory[j + 3]),
-                            Double.parseDouble(purchaseHistory[j + 4])));
+                    for (int j = 0; j < purchaseHistory.length; j = j + 5) {
+                        customer.addToPurchaseHistory(new Product(purchaseHistory[j],
+                                purchaseHistory[j + 1], purchaseHistory[j + 2],
+                                Integer.parseInt(purchaseHistory[j + 3]),
+                                Double.parseDouble(purchaseHistory[j + 4])));
+                    }
+                } else {
+                    customer.setPurchaseHistory(new ArrayList<>());
                 }
-            } else {
-                customer.setPurchaseHistory(new ArrayList<>());
+                customers.add(customer);
             }
-            customers.add(customer);
         }
         return customers;
     }
@@ -415,8 +419,6 @@ public class Menu {
         }
         return (listy.toArray(new String[listy.size()]));
     }
-
-    //mongoose;mongoosed;Potted Plant,M1shop,description,4,10 dollars,Growth Dirt,M1shop,description,9,30 dollars;Painting,M2shop,description,7,10 dollar
 
     public static void write(String fileName, String userName, String password) {
         try {
