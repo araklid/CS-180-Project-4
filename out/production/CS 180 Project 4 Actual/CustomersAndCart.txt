@@ -1,0 +1,8 @@
+cheetah,cheetahed,M1shop,Potted Plant,1
+parrot,parroted,F2shop,Bugs,2
+lizard,lizarded,F2shop,Bugs,4,L2shop,Cups,3
+beetle,beetled,L1shop,Bed Sheets,1
+zebra,zebraed
+sloth,slothed
+moose,moosed
+fox,foxed

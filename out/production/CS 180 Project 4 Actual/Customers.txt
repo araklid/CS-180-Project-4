@@ -1,0 +1,8 @@
+cheetah;cheetahed;M1shop,Potted Plant,description,4,10.00,M1shop,MiracleGro,description,9,30.00;M2shop,Painting,description,7,10.00
+parrot;parroted;G1shop,Bird Seed,description,100,20.00,G1shop,Bird Fountain,description,2,200.00;G2shop,Hammock,description,5,50.00
+lizard;lizarded;A1shop,Toothbrush,description,20,10.00,A1shop,Toothpaste,description,30,5.00
+beetle;beetled;A1shop,Toothbrush,description,20,10.00,A1shop,Toothpaste,description,30,5.00
+zebra;zebraed
+sloth;slothed
+moose;moosed
+fox;foxed
