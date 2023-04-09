@@ -12,6 +12,7 @@ public class Customer extends User {
     public Customer(String username, String password) {
         super(username, password);
         shoppingCart = new ArrayList<>();
+        purchaseHistory = new ArrayList<>();
     }
 
     public void setShoppingCart(ArrayList<Product> shoppingCart) {
