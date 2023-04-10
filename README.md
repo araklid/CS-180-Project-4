@@ -1,12 +1,21 @@
 # CS-180-Project-4
 
+Members:
+Dilara Baysal - araklid
+Xaen Kaifee -xkaifee
+Weston Walker - WWalker1
+John Danison - jdanison
+Sanjana Janardan - SanjanaJ12
+
+---------------------------------------------------------------------------------------------------------------------------
+
 Instructions on how to run:
 The Menu class has the main that will be able to have access to all of the classes and files. Download all .txt files and all java files as well. Then you simply run the main.
 
 ---------------------------------------------------------------------------------------------------------------------------
 
 Who submitted what:
-BrightSpace Report: John Danison
+BrightSpace Report: Dilara Baysal
 Vocareum: Weston Walker
 
 ---------------------------------------------------------------------------------------------------------------------------
