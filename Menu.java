@@ -640,13 +640,27 @@ public class Menu {
             String storeName = scan.nextLine();
             deleteOrAddStore(seller, storeName, sellers, sOptions);
             writeSellers(sellers);
-        } else if (sOptions.equals("8")) {
+        } else if (sOptions.equals("7")) {
             System.out.println("Enter the exact name of the product you would like to delete");
             String productName = scan.nextLine();
             deleteProduct(seller, productName, sellers);
             writeSellers(sellers);
-        }
-        else if (sOptions.equals("q")) {
+        } else if (sOptions.equals("8")) {
+            System.out.println("Enter the name of the store you wish the product to be in");
+            String storeName = scan.nextLine();
+            System.out.println("Enter the name: ");
+            String newName = scan.nextLine();
+            System.out.println("Enter the description: ");
+            String newDesc = scan.nextLine();
+            System.out.println("Enter the quantity available for purchase:");
+            int newQuant = scan.nextInt();
+            scan.nextLine();
+            System.out.println("Enter the price:");
+            double newPrice = scan.nextDouble();
+            scan.nextLine();
+            addProduct(seller, new Product(storeName, newName, newDesc, newQuant, newPrice), storeName);
+            writeSellers(sellers);
+        } else if (sOptions.equals("q")) {
             System.out.println("Goodbye!");
             writeSellers(sellers);
         }
@@ -744,7 +758,6 @@ public class Menu {
         }
     }
     public static void deleteProduct(Seller seller, String productName, ArrayList<Seller> sellers) {
-
         for (int i = 0; i < seller.getStores().size(); i++) {
             for (int j = 0; j < seller.getStores().get(i).getProducts().size(); j++) {
                 if (seller.getStores().get(i).getProducts().get(j).getName().equals(productName)) {
@@ -752,5 +765,10 @@ public class Menu {
                 }
             }
         }
+    }
+    public static void addProduct(Seller seller, Product product, String storeName) {
+        Store store = seller.findStore(storeName);
+        int index = seller.getStores().indexOf(store);
+        seller.getStores().get(index).addProduct(product);
     }
 }
