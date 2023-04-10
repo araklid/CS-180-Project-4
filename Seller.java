@@ -26,8 +26,21 @@ public class Seller extends User {
 
     public void removeStore(Store store) {
         stores.remove(store);
-
     }
+    public void addStore(Store store) {
+        stores.add(store);
+    }
+    public Store findStore(String storeName) {
+        Store foundStore = null;
+        for (Store store : stores) {
+            if (store.getName().equals(storeName)) {
+                foundStore = store;
+            }
+        }
+        return foundStore;
+    }
+
+
 
 
 

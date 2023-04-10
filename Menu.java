@@ -25,15 +25,14 @@ public class Menu {
         while (!acc.equals("new") && !acc.equals("log in")) {
             System.out.println("Would you like to create a new account (new), log in (log in), or quit (q)?");
             acc = scan.nextLine();
-            if (acc.equals("new")) {
-                create(scan, sellers, customers);
-            } else if (acc.equals("log in")) {
-                logIn(scan, sellers, customers);
-            } else if (acc.equals("q")) {
-                System.out.println("Goodbye!");
-                return;
-            } else {
-                System.out.println("Not a valid entry!");
+            switch (acc) {
+                case "new" -> create(scan, sellers, customers);
+                case "log in" -> logIn(scan, sellers, customers);
+                case "q" -> {
+                    System.out.println("Goodbye!");
+                    return;
+                }
+                default -> System.out.println("Not a valid entry!");
             }
         }
     }
@@ -547,7 +546,8 @@ public class Menu {
     }
 
     public static void sellerAccount(Scanner scan, Seller seller, ArrayList<Seller> sellers) {
-        System.out.println("Would you like to view statistics dashboard (1), import products (2), export products (3), edit products (4), or quit (q)?");
+        System.out.println("Would you like to view statistics dashboard (1), import products (2), export products (3), " +
+                "edit products (4), delete store (5), or quit (q)?");
         String sOptions = scan.nextLine();
         if (sOptions.equals("1")) {
             //TODO: include amount of products in customer cart
@@ -634,6 +634,11 @@ public class Menu {
                 }
             }
             sellerAccount(scan, seller, sellers);
+        } else if (sOptions.equals("5")) {
+            System.out.println("Enter the exact name of the store you would like to delete");
+            String storeName = scan.nextLine();
+            deleteStore(seller, storeName, sellers);
+            writeSellers(sellers);
         } else if (sOptions.equals("q")) {
             System.out.println("Goodbye!");
             writeSellers(sellers);
@@ -717,7 +722,16 @@ public class Menu {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+    public static void deleteStore(Seller seller, String storeName, ArrayList<Seller> sellers) {
+        Store store = seller.findStore(storeName);
+        for (int i = 0; i < sellers.size(); i++) {
+            if (seller == sellers.get(i)) {
+                seller.removeStore(store);
+            }
+        }
+    }
+    public static void deleteProduct() {
 
     }
-
 }
