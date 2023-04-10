@@ -547,7 +547,7 @@ public class Menu {
 
     public static void sellerAccount(Scanner scan, Seller seller, ArrayList<Seller> sellers) {
         System.out.println("Would you like to view statistics dashboard (1), import products (2), export products (3), " +
-                "edit products (4), delete store (5), or quit (q)?");
+                "edit products (4), delete store (5), delete product (6), or quit (q)?");
         String sOptions = scan.nextLine();
         if (sOptions.equals("1")) {
             //TODO: include amount of products in customer cart
@@ -639,7 +639,13 @@ public class Menu {
             String storeName = scan.nextLine();
             deleteStore(seller, storeName, sellers);
             writeSellers(sellers);
-        } else if (sOptions.equals("q")) {
+        } else if (sOptions.equals("6")) {
+            System.out.println("Enter the exact name of the product you would like to delete");
+            String productName = scan.nextLine();
+            deleteProduct(seller, productName, sellers);
+            writeSellers(sellers);
+        }
+        else if (sOptions.equals("q")) {
             System.out.println("Goodbye!");
             writeSellers(sellers);
         }
@@ -723,6 +729,7 @@ public class Menu {
             e.printStackTrace();
         }
     }
+    //this method locates and deletes a seller's store
     public static void deleteStore(Seller seller, String storeName, ArrayList<Seller> sellers) {
         Store store = seller.findStore(storeName);
         for (int i = 0; i < sellers.size(); i++) {
@@ -731,7 +738,14 @@ public class Menu {
             }
         }
     }
-    public static void deleteProduct() {
+    public static void deleteProduct(Seller seller, String productName, ArrayList<Seller> sellers) {
 
+        for (int i = 0; i < seller.getStores().size(); i++) {
+            for (int j = 0; j < seller.getStores().get(i).getProducts().size(); j++) {
+                if (seller.getStores().get(i).getProducts().get(j).getName().equals(productName)) {
+                    seller.getStores().get(i).getProducts().remove(j);
+                }
+            }
+        }
     }
 }

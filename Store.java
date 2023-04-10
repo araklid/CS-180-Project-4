@@ -20,6 +20,9 @@ public class Store {
     public void addProduct(Product product) {
         this.products.add(product);
     }
+    public void removeProduct(Product product) {
+        products.remove(product);
+    }
 
 
     public ArrayList<Product> getProducts() {
