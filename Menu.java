@@ -191,7 +191,7 @@ public class Menu {
                     for (int k = 0; k < sellers.get(i).getStores().get(j).getProducts().size(); k++) {
                         if (sellers.get(i).getStores().get(j).getProducts().get(k).getName().toLowerCase().equals(prodNamMaybe.toLowerCase())) {
                             temp = true;
-                            System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getName());
+                            //System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getName());
                             return sellers.get(i).getStores().get(j).getProducts().get(k);
                         }
                     }
@@ -221,8 +221,8 @@ public class Menu {
                 System.out.println("*************************");
                 for (int k = 0; k < sellers.get(i).getStores().get(j).getProducts().size(); k++) {
                     System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getName());
-                    System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getDescription());
-                    System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getQuantityAvailable() + " units");
+                    //System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getDescription());
+                    //System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getQuantityAvailable() + " units");
                     System.out.printf("$%.2f", sellers.get(i).getStores().get(j).getProducts().get(k).getPrice());
                     list.add(sellers.get(i).getStores().get(j).getProducts().get(k));
                     System.out.println("\n------------------------");
@@ -255,8 +255,8 @@ public class Menu {
             System.out.println(sortedProducts.get(i).getNameOfStore());
             System.out.println("*************************");
             System.out.println(sortedProducts.get(i).getName());
-            System.out.println(sortedProducts.get(i).getDescription());
-            System.out.println(sortedProducts.get(i).getQuantityAvailable() + " units");
+            //System.out.println(sortedProducts.get(i).getDescription());
+            //System.out.println(sortedProducts.get(i).getQuantityAvailable() + " units");
             System.out.printf("$%.2f\n", sortedProducts.get(i).getPrice());
         }
     }
@@ -282,8 +282,8 @@ public class Menu {
             System.out.println(sortedProducts.get(i).getNameOfStore());
             System.out.println("*************************");
             System.out.println(sortedProducts.get(i).getName());
-            System.out.println(sortedProducts.get(i).getDescription());
-            System.out.println(sortedProducts.get(i).getQuantityAvailable() + " units");
+            //System.out.println(sortedProducts.get(i).getDescription());
+            //System.out.println(sortedProducts.get(i).getQuantityAvailable() + " units");
             System.out.printf("$%.2f\n", sortedProducts.get(i).getPrice());
         }
     }
@@ -303,8 +303,8 @@ public class Menu {
                             sellers.get(i).getStores().get(j).getProducts().get(k).getNameOfStore().toLowerCase().contains(product.toLowerCase())) {
 
                         System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getName());
-                        System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getDescription());
-                        System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getQuantityAvailable());
+                        //System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getDescription());
+                        //System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getQuantityAvailable());
                         System.out.println(sellers.get(i).getStores().get(j).getProducts().get(k).getPrice());
                         temp = true;
                         System.out.println("------------------------------------");
@@ -314,7 +314,7 @@ public class Menu {
         }
 
         if (!temp) {
-            System.out.println("No product matches this entry, would you like to select another (y/n)?");
+            System.out.println("No product matches this entry, would you like to search again (y/n)?");
             String yesOrNo = scan.nextLine();
             if (yesOrNo.equals("y")) {
                 displayFunctions(scan, sellers, customers);
@@ -455,8 +455,17 @@ public class Menu {
 
         if (selection.equals("view")) {
             Product productSelection = displayFunctions(scan, sellers, customers);
-            System.out.println("Would you like to purchase " + productSelection.getName() + ", or add to cart?");
-            System.out.println("1. Purchase\n2. Add");
+            System.out.println("*************************");
+            System.out.println(productSelection.getNameOfStore());
+            System.out.println("*************************");
+            System.out.println(productSelection.getName());
+            System.out.println(productSelection.getDescription());
+            System.out.println(productSelection.getQuantityAvailable() + " units");
+            System.out.printf("$%.2f", productSelection.getPrice());
+            System.out.println("\n------------------------");
+
+            System.out.println("Would you like to purchase " + productSelection.getName() + ", add to cart, or go back to the main menu?");
+            System.out.println("1. Purchase\n2. Add\n3. Main Menu");
             String temp = scan.nextLine();
 
             if (temp.equals("1")) {
@@ -468,6 +477,8 @@ public class Menu {
             } else if (temp.equals("2")) {
                 System.out.println("Added " + productSelection.getName() + " to cart");
                 customer.addToShoppingCart(productSelection);
+                customerAccount(scan, sellers, customer, customers);
+            } else if (temp.equals("3")) {
                 customerAccount(scan, sellers, customer, customers);
             }
 
@@ -686,7 +697,7 @@ public class Menu {
                 pw.write(";");
                 if (sellers.get(i).getStores() != null) {
                     for (int j = 0; j < sellers.get(i).getStores().size(); j++) {
-                        pw.write(sellers.get(i).getStores().get(j).getName());
+                        pw.write(sellers.get(i).getStores().get(j).getName() + ",");
                         for (int k = 0; k < sellers.get(i).getStores().get(j).getProducts().size(); k++) {
                             pw.write(sellers.get(i).getStores().get(j).getProducts().get(k).getName() + ","
                                     + sellers.get(i).getStores().get(j).getProducts().get(k).getDescription() + ","
