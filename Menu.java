@@ -1,5 +1,7 @@
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Scanner;
 
 /** Dilara Baysal
@@ -9,9 +11,19 @@ import java.util.Scanner;
 
 public class Menu {
 
-    public static void main(String[] args) {
+    // Class Variables to make John's life easier. Acts as a median to relay information.
+    static ArrayList<String> storeNames = new ArrayList<String>();
+    static ArrayList<String> storeProductList = new ArrayList<String>();
 
+    public static void main(String[] args) {
         Scanner scan = new Scanner(System.in);
+
+        // Clear global variables
+        for (int i = 0; i < storeNames.size(); i++) {
+            storeNames.remove(storeNames.get(i));
+            storeProductList.remove(storeProductList.get(i));
+        }
+        // Start main logic
 
         System.out.println("Welcome to the Marketplace!");
 
@@ -25,14 +37,15 @@ public class Menu {
         while (!acc.equals("new") && !acc.equals("log in")) {
             System.out.println("Would you like to create a new account (new), log in (log in), or quit (q)?");
             acc = scan.nextLine();
-            switch (acc) {
-                case "new" -> create(scan, sellers, customers);
-                case "log in" -> logIn(scan, sellers, customers);
-                case "q" -> {
-                    System.out.println("Goodbye!");
-                    return;
-                }
-                default -> System.out.println("Not a valid entry!");
+            if (acc.equals("new")) {
+                create(scan, sellers, customers);
+            } else if (acc.equals("log in")) {
+                logIn(scan, sellers, customers);
+            } else if (acc.equals("q")) {
+                System.out.println("Goodbye!");
+                return;
+            } else {
+                System.out.println("Not a valid entry!");
             }
         }
     }
@@ -74,6 +87,10 @@ public class Menu {
             for (int i = 0; i < customerData.length; i++) {
                 String[] dataLine = customerData[i].split(";");
                 Customer customer = new Customer(dataLine[0], dataLine[1]);
+
+                if (dataLine.length > 3) {
+                    customer.setWorkingPurchaseHistory(dataLine[3]);
+                }
                 //customer file: username;pass;shoppingcart;purchasehistory
                 //shoppingcart and purchase history are not organized by shop
 
@@ -107,7 +124,6 @@ public class Menu {
         }
         return customers;
     }
-
 
     public static void create(Scanner scan, ArrayList<Seller> sellers, ArrayList<Customer> customers) {
         System.out.println("Account creation: Are you a seller (s) or a customer (c)?\nQuit: (q)");
@@ -225,14 +241,22 @@ public class Menu {
                     System.out.printf("$%.2f", sellers.get(i).getStores().get(j).getProducts().get(k).getPrice());
                     list.add(sellers.get(i).getStores().get(j).getProducts().get(k));
                     System.out.println("\n------------------------");
-
                 }
             }
         }
         return list;
     }
 
-
+    public static void storeProductInitialization(ArrayList<Seller> sellers) {
+        for (int i = 0; i < sellers.size(); i++) {
+            for (int j = 0; j < sellers.get(i).getStores().size(); j++) {
+                for (int k = 0; k < sellers.get(i).getStores().get(j).getProducts().size(); k++) {
+                    storeNames.add(String.valueOf(sellers.get(i).getStores().get(j).getName()));
+                    storeProductList.add(String.valueOf(sellers.get(i).getStores().get(j).getProducts().get(k).getName()));
+                }
+            }
+        }
+    }
     public static void displayByCost(ArrayList<Seller> sellers, ArrayList<Product> list) {
         ArrayList<Product> sortedProducts = new ArrayList<>();
         int index = -1;
@@ -448,8 +472,11 @@ public class Menu {
     }
 
     public static void customerAccount(Scanner scan, ArrayList<Seller> sellers, Customer customer, ArrayList<Customer> customers) {
+        // John added call that initializes class variables
+        storeProductInitialization(sellers);
+
         //dashboard
-        System.out.println("Would you like to view products (view), view your shopping cart (cart), export your purchase history (hist), or quit (q)?");
+        System.out.println("Would you like to view products (view), view your shopping cart (cart), export your purchase history (hist), view your statistics (stats), or quit (q)?");
         String selection = scan.nextLine();
 
         if (selection.equals("view")) {
@@ -542,12 +569,13 @@ public class Menu {
                 System.out.println("Your shopping cart is empty!");
                 customerAccount(scan, sellers, customer, customers);
             }
+        } else if (selection.equalsIgnoreCase("stats")) {
+            viewCustomerStats(customer, scan);
         }
     }
 
     public static void sellerAccount(Scanner scan, Seller seller, ArrayList<Seller> sellers) {
-        System.out.println("Would you like to view statistics dashboard (1), import products (2), export products (3), " +
-                "edit products (4), delete store (5), or quit (q)?");
+        System.out.println("Would you like to view statistics dashboard (1), import products (2), export products (3), edit products (4), or quit (q)?");
         String sOptions = scan.nextLine();
         if (sOptions.equals("1")) {
             //TODO: include amount of products in customer cart
@@ -634,11 +662,6 @@ public class Menu {
                 }
             }
             sellerAccount(scan, seller, sellers);
-        } else if (sOptions.equals("5")) {
-            System.out.println("Enter the exact name of the store you would like to delete");
-            String storeName = scan.nextLine();
-            deleteStore(seller, storeName, sellers);
-            writeSellers(sellers);
         } else if (sOptions.equals("q")) {
             System.out.println("Goodbye!");
             writeSellers(sellers);
@@ -722,16 +745,240 @@ public class Menu {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+
     }
-    public static void deleteStore(Seller seller, String storeName, ArrayList<Seller> sellers) {
-        Store store = seller.findStore(storeName);
-        for (int i = 0; i < sellers.size(); i++) {
-            if (seller == sellers.get(i)) {
-                seller.removeStore(store);
+
+    public static void viewCustomerStats(Customer customer, Scanner scan) {
+        // Read in the products via readProduct function, not sorted
+        ArrayList<String> quantityThenStore = readProducts(false);
+        displayCusStats(quantityThenStore, false);
+
+        // Formatting lines
+        System.out.println("\n-----------------------------------");
+        System.out.println("\n***************************************************************************\n");
+
+        // Get history of previous purchases
+        quantityThenStore = readPurchaseHistory(customer, false);
+        displayCusHist(quantityThenStore);
+
+        // Sorting. Buyers have 2 options, alphabetize by sort name or arrange lowest to highest
+        System.out.println("\nWould you like to sort these statistics (yes/no)");
+        String choice = scan.nextLine();
+
+        // Formatting lines
+        System.out.println("-----------------------------------");
+        System.out.println("\n***************************************************************************\n");
+
+        if (choice.equalsIgnoreCase("yes")) {
+            System.out.println("1. Alphabetize store names");
+            System.out.println("2. Sort by lowest quantity first");
+            String selection = scan.nextLine();
+
+            switch(selection) {
+                case "1":
+                    ArrayList<String> sortedQuantityThenStore = readProducts(true);
+                    displayCusStats(sortedQuantityThenStore, true);
+                    break;
+
+            }
+
+
+        } else if (choice.equalsIgnoreCase("no")) {
+
+        } else {
+            do {
+                System.out.println("Invalid Input. Try again.");
+                System.out.println("\nWould you like to sort these statistics (yes/no)");
+                choice = scan.nextLine();
+            } while (!(choice.equalsIgnoreCase("yes") || choice.equalsIgnoreCase("no")));
+        }
+
+    }
+
+    public static void displayCusStats(ArrayList<String> quantityThenStore, boolean sorted) {
+
+        // sort them via most to least
+        String[] sortQuantityThenStore = new String[quantityThenStore.size()];
+        for (int i = 0; i < quantityThenStore.size(); i++) {
+            sortQuantityThenStore[i] = quantityThenStore.get(i);
+        }
+
+        Arrays.sort(sortQuantityThenStore, Collections.reverseOrder());
+
+        // split it again and store it. temp[0] is quantities, temp[1] is stores
+        String[] temp = new String[2];
+        String[] listStores = new String[sortQuantityThenStore.length];
+        String[] listQuantities = new String[sortQuantityThenStore.length];
+        if (sorted) {
+            for (int i = 0; i < sortQuantityThenStore.length; i++) {
+                temp = sortQuantityThenStore[i].split(",");
+                listStores[i] = temp[1];
+                listQuantities[i] = temp[0];
+            }
+        } else {
+            for (int i = 0; i < sortQuantityThenStore.length; i++) {
+                temp = sortQuantityThenStore[i].split(",");
+                listStores[i] = temp[0];
+                listQuantities[i] = temp[1];
             }
         }
-    }
-    public static void deleteProduct() {
 
+        // Display a dashboard with store and quantities
+        for (int i = 0; i < listStores.length; i++) {
+            System.out.println("\n-----------------------------------");
+            System.out.printf("Store: %s", listStores[i]);
+            System.out.printf("\nNumber of Unique Products: %s", listQuantities[i]);
+        }
+
+    }
+    public static void displayCusHist(ArrayList<String> quantityThenStore) {
+
+        // sort them via most to least
+        String[] sortQuantityThenStore = new String[quantityThenStore.size()];
+        for (int i = 0; i < quantityThenStore.size(); i++) {
+            sortQuantityThenStore[i] = quantityThenStore.get(i);
+        }
+
+        Arrays.sort(sortQuantityThenStore, Collections.reverseOrder());
+
+        // split it again and store it. temp[0] is quantities, temp[1] is stores
+        String[] temp = new String[2];
+        String[] listStores = new String[sortQuantityThenStore.length];
+        String[] listQuantities = new String[sortQuantityThenStore.length];
+        for (int i = 0; i < sortQuantityThenStore.length; i++) {
+            temp = sortQuantityThenStore[i].split(",");
+            listStores[i] = temp[1];
+            listQuantities[i] = temp[0];
+        }
+
+        // Display a dashboard with store and quantities
+        for (int i = 0; i < listStores.length; i++) {
+            System.out.println("\n-----------------------------------");
+            System.out.printf("Store: %s", listStores[i]);
+            System.out.printf("\nNumber of Unique Products Purchased: %s", listQuantities[i]);
+        }
+
+    }
+    public static void viewSellerStats() {
+        // Needs to be done, just follow bullet point guidlines and whatever means of sorting is fine, alphabetizing is ez.
+    }
+
+    public static ArrayList<String> readProducts(boolean sorted) {
+        ArrayList<String> storesQuantities = new ArrayList<>();
+        ArrayList<String> quantities = new ArrayList<>();
+
+        // Change products to num products per store
+        String store1 = "";
+        String store2 = "";
+        int quanityCounter = 1;
+        for (int i = 1; i < storeNames.size(); i++) {
+            store1 = storeNames.get(i - 1);
+            store2 = storeNames.get(i);
+
+            if (store1.equalsIgnoreCase(store2)) {
+                quanityCounter++;
+            } else {
+                quantities.add(String.valueOf(quanityCounter));
+                quanityCounter = 1;
+            }
+
+            if (i == storeNames.size() - 1) {
+                quantities.add(String.valueOf(quanityCounter));
+            }
+        }
+
+        // Cut repeats from stores
+        String temp1 = "";
+        String temp2 = "";
+        for (int i = 0; i < storeNames.size() - 1; i++) {
+            temp1 = storeNames.get(i);
+            temp2 = storeNames.get(i + 1);
+
+            if (temp1.equalsIgnoreCase(temp2)) {
+                storeNames.remove(temp2);
+                i--;
+            }
+        }
+
+        // Check to see if the request need to be alphabetized (sorted) or not. If no then return quantity, store else flip it.
+        String[] holding = new String[storeNames.size()];
+        if (!sorted) {
+            for (int i = 0; i < storeNames.size(); i++) {
+                holding[i] = quantities.get(i) + "," + storeNames.get(i);
+                storesQuantities.add(holding[i]);
+            }
+        } else {
+            for (int i = 0; i < storeNames.size(); i++) {
+                holding[i] = storeNames.get(i) + "," + quantities.get(i);
+                storesQuantities.add(holding[i]);
+            }
+        }
+
+        return storesQuantities;
+    }
+
+    public static ArrayList<String> readPurchaseHistory(Customer customer, boolean sorted) {
+        ArrayList<String> storesQuantities = new ArrayList<>();
+        ArrayList<String> stores = new ArrayList<>();
+        ArrayList<String> quantities = new ArrayList<>();
+
+        String[] splitHistory = customer.getWorkingPurchaseHistory().split(",");
+
+        for (int i = 0; i < splitHistory.length; i+= 5) {
+            stores.add(splitHistory[i]);
+        }
+        for (int i = 1; i < splitHistory.length; i+= 5) {
+            quantities.add(splitHistory[i]);
+        }
+
+        // Change products to num products per store
+        String store1 = "";
+        String store2 = "";
+        int quanityCounter = 1;
+        ArrayList<String> quantities1 = new ArrayList<>();
+        for (int i = 1; i < stores.size(); i++) {
+            store1 = stores.get(i - 1);
+            store2 = stores.get(i);
+
+            if (store1.equalsIgnoreCase(store2)) {
+                quanityCounter++;
+            } else {
+                quantities1.add(String.valueOf(quanityCounter));
+                quanityCounter = 1;
+            }
+
+            if (i == stores.size() - 1) {
+                quantities1.add(String.valueOf(quanityCounter));
+            }
+        }
+
+        // Cut repeats from stores
+        String temp1 = "";
+        String temp2 = "";
+        for (int i = 0; i < stores.size() - 1; i++) {
+            temp1 = stores.get(i);
+            temp2 = stores.get(i + 1);
+
+            if (temp1.equalsIgnoreCase(temp2)) {
+                stores.remove(temp2);
+                i--;
+            }
+        }
+
+        // Check to see if the request need to be alphabetized (sorted) or not. If no then return quantity, store else flip it.
+        String[] holding = new String[stores.size()];
+        if (!sorted) {
+            for (int i = 0; i < stores.size(); i++) {
+                holding[i] = quantities1.get(i) + "," + stores.get(i);
+                storesQuantities.add(holding[i]);
+            }
+        } else {
+            for (int i = 0; i < stores.size(); i++) {
+                holding[i] = stores.get(i) + "," + quantities1.get(i);
+                storesQuantities.add(holding[i]);
+            }
+        }
+
+        return storesQuantities;
     }
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 public class Customer extends User {
     private ArrayList<Product> shoppingCart;
     private ArrayList<Product> purchaseHistory;
+    private String workingPurchaseHistory;
     public Customer(String username, String password, ArrayList<Product> shoppingCart, ArrayList<Product> purchaseHistory) {
         super(username, password);
         this.shoppingCart = shoppingCart;
@@ -49,5 +50,11 @@ public class Customer extends User {
         this.purchaseHistory.remove(product);
     }
 
+    public void setWorkingPurchaseHistory(String workingPurchaseHistory) {
+        this.workingPurchaseHistory = workingPurchaseHistory;
+    }
 
+    public String getWorkingPurchaseHistory() {
+        return workingPurchaseHistory;
+    }
 }
