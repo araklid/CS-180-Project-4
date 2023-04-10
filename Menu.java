@@ -547,7 +547,8 @@ public class Menu {
 
     public static void sellerAccount(Scanner scan, Seller seller, ArrayList<Seller> sellers) {
         System.out.println("Would you like to view statistics dashboard (1), import products (2), export products (3), " +
-                "edit products (4), delete store (5), delete product (6), or quit (q)?");
+                "edit products (4), \ndelete store (5), add store (6), delete product (7), add product (8) or quit " +
+                "(q)?");
         String sOptions = scan.nextLine();
         if (sOptions.equals("1")) {
             //TODO: include amount of products in customer cart
@@ -634,12 +635,12 @@ public class Menu {
                 }
             }
             sellerAccount(scan, seller, sellers);
-        } else if (sOptions.equals("5")) {
-            System.out.println("Enter the exact name of the store you would like to delete");
+        } else if (sOptions.equals("5") || sOptions.equals("6") ) {
+            System.out.println("Enter the exact name of the store");
             String storeName = scan.nextLine();
-            deleteStore(seller, storeName, sellers);
+            deleteOrAddStore(seller, storeName, sellers, sOptions);
             writeSellers(sellers);
-        } else if (sOptions.equals("6")) {
+        } else if (sOptions.equals("8")) {
             System.out.println("Enter the exact name of the product you would like to delete");
             String productName = scan.nextLine();
             deleteProduct(seller, productName, sellers);
@@ -730,10 +731,14 @@ public class Menu {
         }
     }
     //this method locates and deletes a seller's store
-    public static void deleteStore(Seller seller, String storeName, ArrayList<Seller> sellers) {
+    public static void deleteOrAddStore(Seller seller, String storeName, ArrayList<Seller> sellers,
+                                        String addOrRemove) {
+        if (addOrRemove.equals("6")) {
+            seller.addStore(new Store(storeName));
+        }
         Store store = seller.findStore(storeName);
         for (int i = 0; i < sellers.size(); i++) {
-            if (seller == sellers.get(i)) {
+            if (seller == sellers.get(i) && addOrRemove.equals("5")) {
                 seller.removeStore(store);
             }
         }
