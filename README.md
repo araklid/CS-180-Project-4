@@ -38,6 +38,9 @@ This gives all of the product specific information such as name, type, who selle
 Users:
 This class allows for a password to be got and set and stay as an attribute to the user. This is useful for distinguishing who is who and for allowing access back into accounts. This class is mainly used in the menu in the main function. This was tested via trial and error as there are no real means of testing it.
 
+CSVUtils:
+This code provides functionality for importing and exporting products and customer purchase history from/to CSV files for an online marketplace application. The importProductsFromCSV method reads in a CSV file and creates a list of Product objects. The exportProductsToCSV method exports a list of Product objects to a CSV file. The exportCustomerShoppingCartToCSV and exportCustomerPurchaseHistoryToCSV methods export the contents of a customer's shopping cart or purchase history, respectively, to a CSV file.
+
 ---------------------------------------------------------------------------------------------------------------------------
 
 All classes with Methods and Descriptions:
@@ -106,3 +109,10 @@ Users
   getPassword - return’s user’s password
   setUsername - sets user’s username
   setPassword - sets user’s password
+  
+ CSVUtils
+  importProductsFromCSV - returns products
+  exportProductsToCSV - catches files exception and writes products in file
+  exportCustomerShoppingCartToCSV - writes Customer shopping cart items in file and handles file exception
+  exportCustomerPurchaseHistoryToCSV - writes Customer purchase history in file and handles file exception
+  
